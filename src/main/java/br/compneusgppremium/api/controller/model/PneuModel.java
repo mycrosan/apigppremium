@@ -1,5 +1,6 @@
 package br.compneusgppremium.api.controller.model;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,15 +16,16 @@ public class PneuModel {
     @Column
     public String dot;
     @Column
-    public String data;
+    public String dados;
+    @ManyToOne
+    @JoinColumn(name="modelo_id")
+    private ModeloModel modelo;
     @Column
-    public String model_id;
+    public Integer medida_id;
     @Column
-    public String medidia_id;
+    public Integer borracha_id;
     @Column
-    public String borracha_id;
-    @Column
-    public String pais_id;
+    public Integer pais_id;
     @Column
     public String fotos;
 }
