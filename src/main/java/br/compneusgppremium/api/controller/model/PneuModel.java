@@ -1,7 +1,8 @@
 package br.compneusgppremium.api.controller.model;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
+import org.springframework.boot.jackson.JsonObjectSerializer;
 
 import javax.persistence.*;
 
@@ -16,16 +17,23 @@ public class PneuModel {
     @Column
     public String dot;
     @Column
+    @Convert(converter = JpaConverterJson.class)
     public String dados;
+
     @ManyToOne
     @JoinColumn(name="modelo_id")
     private ModeloModel modelo;
+
+    @ManyToOne
+    public MedidaModel medida;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    public BorrachaModel borracha;
+
+    @ManyToOne
+    public PaisModel pais;
+
     @Column
-    public Integer medida_id;
-    @Column
-    public Integer borracha_id;
-    @Column
-    public Integer pais_id;
-    @Column
+    @Convert(converter = JpaConverterJson.class)
     public String fotos;
 }

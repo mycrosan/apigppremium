@@ -11,5 +11,9 @@ public class BorrachaModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
     @Column
-    public String descricao;
+    public String camelback;
+    @Column
+    public String anti_quebra;
+    @Column
+    public String espessuramento;
 }

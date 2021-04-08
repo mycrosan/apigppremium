@@ -4,7 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity(name = "medida")
+@Entity(name = "medida_pneu")
 @Data
 public class MedidaModel {
     @Id

@@ -6,11 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 public class PneuController {
 
     @Autowired
     private PneuRepository repository;
+
+    @GetMapping(path = "/api/pneu")
+    public List<PneuModel> findAll(){
+        var it = repository.findAll();
+        var pneus = new ArrayList<PneuModel>();
+        it.forEach(e -> pneus.add(e));
+        return pneus;
+    }
 
     @GetMapping(path = "/api/pneu/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id){
@@ -20,7 +33,15 @@ public class PneuController {
     }
 
     @PostMapping(path = "/api/pneu/salvar")
-    public PneuModel salvar(@RequestBody PneuModel pneu){
-        return repository.save(pneu);
+    public Object salvar(@RequestBody PneuModel pneu){
+        Object retorno =  repository.save(pneu);
+        Map<String, String> objetoValues = new HashMap<>();
+        objetoValues.put("msg", "Dados Salvos com Sucesso!");
+
+        if(retorno != null){
+            return objetoValues;
+        }else{
+            return "Falha ao Salvar os Dados";
+        }
     }
 }

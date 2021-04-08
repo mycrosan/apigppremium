@@ -14,9 +14,10 @@ public class PaisController {
 
     @GetMapping(path = "/api/pais/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id){
-        return repository.findById(id)
+        var pais = repository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
+        return pais;
     }
 
     @PostMapping(path = "/api/pais/salvar")

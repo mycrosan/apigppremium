@@ -1,12 +1,15 @@
 package br.compneusgppremium.api.controller.model;
+
 import lombok.Data;
 
 import javax.persistence.*;
+
+@Entity(name = "marca")
 @Data
-@Entity(name = "pais")
-public class PaisModel {
+public class MarcaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String descricao;
+    public Integer id;
+    @Column
+    public String descricao;
 }
