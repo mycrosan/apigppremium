@@ -1,7 +1,6 @@
 package br.compneusgppremium.api.controller.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -12,8 +11,7 @@ public class ModeloModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
-    public String descricao;
-    @ManyToOne(fetch = FetchType.EAGER)
-    public MarcaModel marca;
-
+    private String descricao;
+    @ManyToOne
+    private MarcaModel marca;
 }

@@ -2,8 +2,6 @@ package br.compneusgppremium.api.controller.model;
 
 import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
-import org.springframework.boot.jackson.JsonObjectSerializer;
-
 import javax.persistence.*;
 
 @Entity(name = "pneu")
@@ -11,23 +9,22 @@ import javax.persistence.*;
 public class PneuModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
     @Column
-    public String numero_etiqueta;
+    private String numero_etiqueta;
     @Column
-    public String dot;
+    private String dot;
     @Column
     @Convert(converter = JpaConverterJson.class)
-    public String dados;
+    private String dados;
 
     @ManyToOne
-    @JoinColumn(name="modelo_id")
     private ModeloModel modelo;
 
     @ManyToOne
     public MedidaModel medida;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     public BorrachaModel borracha;
 
     @ManyToOne
