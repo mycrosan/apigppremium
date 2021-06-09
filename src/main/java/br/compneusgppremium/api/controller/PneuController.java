@@ -17,20 +17,20 @@ public class PneuController {
     @Autowired
     private PneuRepository repository;
 
-//    @GetMapping(path = "/api/pneu")
-//    public List<PneuModel> findAll() {
-//        var it = repository.findAll();
-//        var pneus = new ArrayList<PneuModel>();
-//        it.forEach(e -> pneus.add(e));
-//        return pneus;
-//    }
+    @GetMapping(path = "/api/pneu")
+    public List<PneuModel> findAll() {
+        var it = repository.findAll();
+        var pneus = new ArrayList<PneuModel>();
+        it.forEach(e -> pneus.add(e));
+        return pneus;
+    }
 
-//    @GetMapping(path = "/api/pneu/{id}")
-//    public ResponseEntity consultar(@PathVariable("id") Integer id) {
-//        return repository.findById(id)
-//                .map(record -> ResponseEntity.ok().body(record))
-//                .orElse(ResponseEntity.notFound().build());
-//    }
+    @GetMapping(path = "/api/pneu/{id}")
+    public ResponseEntity consultar(@PathVariable("id") Integer id) {
+        return repository.findById(id)
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
 //    @PostMapping(path = "/api/pneu/salvar")
 //    public Object salvar(@RequestBody PneuModel pneu) {
