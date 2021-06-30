@@ -32,12 +32,12 @@ public class PneuController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-//    @PostMapping(path = "/api/pneu/salvar")
-//    public Object salvar(@RequestBody PneuModel pneu) {
-//        try {
-//          return repository.save(pneu);
-//        } catch (Exception ex) {
-//            return ex;
-//        }
-//    }
+    @PostMapping(path = "/api/pneu")
+    public Object salvar(@RequestBody PneuModel pneu) {
+        try {
+            return repository.save(pneu);
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
 }
