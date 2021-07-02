@@ -1,38 +1,39 @@
 package br.compneusgppremium.api.controller;
-import br.compneusgppremium.api.controller.model.PneuModel;
-import br.compneusgppremium.api.repository.PneuRepository;
+
+import br.compneusgppremium.api.controller.model.MedidaModel;
+import br.compneusgppremium.api.repository.MedidaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
-
 @RestController
-public class PneuController {
+public class MedidaController {
 
     @Autowired
-    private PneuRepository repository;
+    private MedidaRepository repository;
 
-    @GetMapping(path = "/api/pneu")
-    public List<PneuModel> findAll() {
+    @GetMapping(path = "/api/medida")
+    public List<MedidaModel> findAll() {
         var it = repository.findAll();
-        var pneus = new ArrayList<PneuModel>();
-        it.forEach(e -> pneus.add(e));
-        return pneus;
+        var medidas = new ArrayList<MedidaModel>();
+        it.forEach(e -> medidas.add(e));
+        return medidas;
     }
 
-    @GetMapping(path = "/api/pneu/{id}")
+    @GetMapping(path = "/api/medida/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
         return repository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "/api/pneu")
-    public Object salvar(@RequestBody PneuModel pneu) {
+    @PostMapping(path = "/api/medida")
+    public Object salvar(@RequestBody MedidaModel medida) {
         try {
-            return repository.save(pneu);
+            return repository.save(medida);
         } catch (Exception ex) {
             return ex;
         }
