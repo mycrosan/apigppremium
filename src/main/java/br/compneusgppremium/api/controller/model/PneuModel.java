@@ -4,7 +4,7 @@ import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
 import javax.persistence.*;
 
-@Entity(name = "pneu")
+@Entity(name = "carcaca")
 @Data
 public class PneuModel {
     @Id

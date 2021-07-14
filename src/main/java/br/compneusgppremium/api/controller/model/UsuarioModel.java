@@ -24,6 +24,9 @@ public class UsuarioModel implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<PerfilModel> perfil = new ArrayList<>();
 
+//    @ManyToOne
+//    private PerfilModel perfil;
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -66,21 +69,4 @@ public class UsuarioModel implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (this == obj)
-//            return true;
-//        if (obj == null)
-//            return false;
-//        if (getClass() != obj.getClass())
-//            return false;
-//        Usuario other = (Usuario) obj;
-//        if (id == null) {
-//            if (other.id != null)
-//                return false;
-//        } else if (!id.equals(other.id))
-//            return false;
-//        return true;
-//    }
 }
