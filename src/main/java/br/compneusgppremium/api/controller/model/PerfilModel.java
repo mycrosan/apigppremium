@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 
-@Entity(name = "usuario_perfil")
+@Entity(name = "perfil")
 
 public class PerfilModel implements GrantedAuthority {
     private static final long serialVersionUID = 1L;

@@ -1,4 +1,4 @@
-package br.compneusgppremium.api.config.security;
+package br.compneusgppremium.api.service;
 
 import br.compneusgppremium.api.controller.model.UsuarioModel;
 import io.jsonwebtoken.Jwts;
@@ -12,10 +12,10 @@ import java.util.Date;
 @Service
 public class TokenService {
 	
-	@Value("${forum.jwt.expiration}")
+//	@Value("${compneusgppremium.jwt.expiration}")
 	private String expiration;
 	
-	@Value("${forum.jwt.secret}")
+//	@Value("${compneusgppremium.jwt.secret}")
 	private String secret;
 
 	public String gerarToken(Authentication authentication) {

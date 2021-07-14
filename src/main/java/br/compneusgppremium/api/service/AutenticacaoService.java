@@ -1,4 +1,4 @@
-package br.compneusgppremium.api.config.security;
+package br.compneusgppremium.api.service;
 
 import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.UsuarioRepository;
