@@ -12,10 +12,10 @@ import java.util.Date;
 @Service
 public class TokenService {
 	
-//	@Value("${compneusgppremium.jwt.expiration}")
+	@Value("${gppremium.jwt.expiration}")
 	private String expiration;
-	
-//	@Value("${compneusgppremium.jwt.secret}")
+
+	@Value("${gppremium.jwt.secret}")
 	private String secret;
 
 	public String gerarToken(Authentication authentication) {
@@ -24,7 +24,7 @@ public class TokenService {
 		Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
 		
 		return Jwts.builder()
-				.setIssuer("API do Fórum da Alura")
+				.setIssuer("API GP")
 				.setSubject(logado.getId().toString())
 				.setIssuedAt(hoje)
 				.setExpiration(dataExpiracao)

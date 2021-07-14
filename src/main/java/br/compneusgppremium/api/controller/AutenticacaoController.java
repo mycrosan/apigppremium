@@ -13,10 +13,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.Console;
 
 
 @RestController
-//@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AutenticacaoController {
 	
 	@Autowired
@@ -25,15 +26,15 @@ public class AutenticacaoController {
 	@Autowired
 	private TokenService tokenService;
 
-	@PostMapping(path = "/auth")
+	@PostMapping
 	public ResponseEntity<TokenDto> autenticar(@RequestBody @Valid LoginForm form) {
 		UsernamePasswordAuthenticationToken dadosLogin = form.converter();
-		
 		try {
 			Authentication authentication = authManager.authenticate(dadosLogin);
 			String token = tokenService.gerarToken(authentication);
 			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 		} catch (AuthenticationException e) {
+			System.out.println(e);
 			return ResponseEntity.badRequest().build();
 		}
 	}

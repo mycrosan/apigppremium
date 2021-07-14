@@ -18,7 +18,7 @@ public class AutenticacaoService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
        Optional<UsuarioModel> usuario = repository.findByLogin(username);
        if(usuario.isPresent()){
-//           return usuario.get();
+           return usuario.get();
        }
        throw new UsernameNotFoundException("Dados inválidos");
     }
