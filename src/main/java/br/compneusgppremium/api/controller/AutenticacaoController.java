@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 
+import br.compneusgppremium.api.controller.dto.RespostaDto;
 import br.compneusgppremium.api.service.TokenService;
 import br.compneusgppremium.api.controller.dto.TokenDto;
 import br.compneusgppremium.api.controller.form.LoginForm;
@@ -27,15 +28,15 @@ public class AutenticacaoController {
 	private TokenService tokenService;
 
 	@PostMapping
-	public ResponseEntity<TokenDto> autenticar(@RequestBody @Valid LoginForm form) {
+	public ResponseEntity autenticar(@RequestBody @Valid LoginForm form) {
 		UsernamePasswordAuthenticationToken dadosLogin = form.converter();
 		try {
 			Authentication authentication = authManager.authenticate(dadosLogin);
 			String token = tokenService.gerarToken(authentication);
-			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
+			return ResponseEntity.ok(new TokenDto(token, "Bearer", true));
 		} catch (AuthenticationException e) {
 			System.out.println(e);
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.ok(new RespostaDto("Usuário ou senha incorretos", e.getMessage()));
 		}
 	}
 	
