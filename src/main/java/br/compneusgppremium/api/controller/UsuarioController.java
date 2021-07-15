@@ -26,7 +26,7 @@ public class UsuarioController {
 
 
     @GetMapping(path = "/api/usuario/{id}")
-    public ResponseEntity consultar(@PathVariable("id") Integer id){
+    public ResponseEntity consultar(@PathVariable("id") Long id){
         return repository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());

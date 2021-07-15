@@ -14,7 +14,7 @@ import java.util.List;
 public class UsuarioModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    public Long id;
     @Column
     public String nome;
     @Column

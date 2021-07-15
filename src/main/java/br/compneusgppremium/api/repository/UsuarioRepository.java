@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface UsuarioRepository extends CrudRepository<UsuarioModel, Integer> {
+public interface UsuarioRepository extends CrudRepository<UsuarioModel, Long> {
     Optional<UsuarioModel> findByLogin(String login);
 }
