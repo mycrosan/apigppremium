@@ -18,7 +18,7 @@ import java.io.Console;
 
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AutenticacaoController {
 	
 	@Autowired
