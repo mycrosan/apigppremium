@@ -47,8 +47,5 @@ public class PneuController {
         } catch (Exception e) {
             return e;
         }
-
-//                .map(record -> ResponseEntity.ok().body(record))
-//                .orElse(ResponseEntity.notFound().build());
     }
 }

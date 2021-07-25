@@ -13,9 +13,7 @@ import java.util.Optional;
 @RepositoryRestResource(collectionResourceRel = "carcaca", path = "carcaca")
 public interface PneuRepository extends CrudRepository<PneuModel, Integer> {
 
-//    List<PneuModel> findByNumeroEtiqueta(String numero_etiqueta);
+    @Query("from carcaca c where c.numero_etiqueta=:numeroEtiqueta")
+    public Iterable<PneuModel> findByEtiqueta(@Param("numeroEtiqueta") String numeroEtiqueta);
 
-//    Object findByNumeroEtiqueta(String numero_etiqueta);
-@Query("from carcaca c where c.numero_etiqueta=:numeroEtiqueta")
-public Iterable<PneuModel> findByEtiqueta(@Param("numeroEtiqueta") String numeroEtiqueta);
 }
