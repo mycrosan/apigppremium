@@ -1,9 +1,11 @@
 package br.compneusgppremium.api.controller;
+
 import br.compneusgppremium.api.controller.model.PneuModel;
 import br.compneusgppremium.api.repository.PneuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +35,20 @@ public class PneuController {
     public Object salvar(@RequestBody PneuModel pneu) {
         try {
             return repository.save(pneu);
-        } catch (Exception ex) {
-            return ex;
+        } catch (Exception e) {
+            return e;
         }
+    }
+
+    @GetMapping(path = "/api/pesquisa/pneu/{etiqueta}")
+    public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
+        try {
+            return repository.findByEtiqueta(etiqueta);
+        } catch (Exception e) {
+            return e;
+        }
+
+//                .map(record -> ResponseEntity.ok().body(record))
+//                .orElse(ResponseEntity.notFound().build());
     }
 }
