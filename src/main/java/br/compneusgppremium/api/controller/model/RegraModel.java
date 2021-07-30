@@ -11,9 +11,9 @@ public class RegraModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
-    private Float tamanho_min;
+    private Double tamanho_min;
     @Column
-    private Float tamanho_max;
+    private Double tamanho_max;
     @Column
     private String camelback;
     @Column

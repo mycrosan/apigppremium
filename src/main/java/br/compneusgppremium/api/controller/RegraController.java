@@ -38,4 +38,12 @@ public class RegraController {
             return ex;
         }
     }
+    @GetMapping(path = "/api/pesquisa/regra/{matriz}/{medidaPneuRaspado}")
+    public Object consultarRegra(@PathVariable("matriz") Integer matriz, @PathVariable("medidaPneuRaspado") Double medidaPneuRaspado) {
+        try {
+            return repository.findByMatriz(matriz, medidaPneuRaspado);
+        } catch (Exception e) {
+            return e;
+        }
+    }
 }

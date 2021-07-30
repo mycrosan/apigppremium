@@ -25,9 +25,6 @@ public class PneuModel {
     public MedidaModel medida;
 
     @ManyToOne
-    public BorrachaModel borracha;
-
-    @ManyToOne
     public PaisModel pais;
 
     @Column
