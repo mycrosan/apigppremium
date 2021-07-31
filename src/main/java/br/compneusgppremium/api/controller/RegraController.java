@@ -49,11 +49,11 @@ public class RegraController {
             var retornoConsulta = repository.findByMatriz(matriz, medidaPneuRaspado);
             System.out.println(retornoConsulta.size());
             if(retornoConsulta.size() > 1){
-                throw new RuntimeException("O sistema encontrou mais de uma regra para os parametros enviados, revise as regras cadastradas");
+                throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
             }
             return retornoConsulta.get(0);
         } catch (Exception e) {
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,"Regra", e);
+            ApiError apiError = new ApiError(HttpStatus.CONFLICT,"Regra Duplicada", e);
             return apiError;
         }
     }
