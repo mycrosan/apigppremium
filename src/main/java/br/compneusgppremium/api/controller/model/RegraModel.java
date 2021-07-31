@@ -30,4 +30,8 @@ public class RegraModel {
     private MatrizModel matriz;
     @ManyToOne
     private MedidaModel medida;
+    @ManyToOne
+    private ModeloModel modelo;
+    @ManyToOne
+    private PaisModel pais;
 }

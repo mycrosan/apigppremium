@@ -1,11 +1,14 @@
 package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.RegraModel;
 import br.compneusgppremium.api.repository.RegraRepository;
+import net.bytebuddy.implementation.bytecode.Throw;
+import org.hibernate.engine.jdbc.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -38,12 +41,17 @@ public class RegraController {
             return ex;
         }
     }
-    @GetMapping(path = "/api/pesquisa/regra/{matriz}/{medidaPneuRaspado}")
+    @GetMapping(path = "/api/regra/pesquisa/{matriz}/{medidaPneuRaspado}")
     public Object consultarRegra(@PathVariable("matriz") Integer matriz, @PathVariable("medidaPneuRaspado") Double medidaPneuRaspado) {
         try {
-            return repository.findByMatriz(matriz, medidaPneuRaspado);
+            var retornoConsulta = repository.findByMatriz(matriz, medidaPneuRaspado);
+            System.out.println(retornoConsulta.size());
+            if(retornoConsulta.size() > 1){
+                throw new RuntimeException("O sistema encontrou mais de uma regra para os parametros enviados, revise as regras cadastradas");
+            }
+            return retornoConsulta;
         } catch (Exception e) {
-            return e;
+            return e.getMessage();
         }
     }
 }
