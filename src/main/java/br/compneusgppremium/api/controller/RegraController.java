@@ -1,9 +1,11 @@
 package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.RegraModel;
 import br.compneusgppremium.api.repository.RegraRepository;
+import br.compneusgppremium.api.util.ApiError;
 import net.bytebuddy.implementation.bytecode.Throw;
 import org.hibernate.engine.jdbc.Size;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +53,8 @@ public class RegraController {
             }
             return retornoConsulta.get(0);
         } catch (Exception e) {
-            return e.getMessage();
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,"Regra", e);
+            return apiError;
         }
     }
 }
