@@ -49,7 +49,7 @@ public class RegraController {
             if(retornoConsulta.size() > 1){
                 throw new RuntimeException("O sistema encontrou mais de uma regra para os parametros enviados, revise as regras cadastradas");
             }
-            return retornoConsulta;
+            return retornoConsulta.get(0);
         } catch (Exception e) {
             return e.getMessage();
         }
