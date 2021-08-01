@@ -14,7 +14,7 @@ public class ProducaoModel {
     @ManyToOne
     private PneuModel pneu;
     @Column
-    private String medida_pneu_raspado;
+    private Double medida_pneu_raspado;
     @Column
     @Convert(converter = JpaConverterJson.class)
     public String dados;
