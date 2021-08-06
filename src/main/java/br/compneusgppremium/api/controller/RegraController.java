@@ -47,7 +47,6 @@ public class RegraController {
     public Object consultarRegra(@PathVariable("matriz") Integer matriz, @PathVariable("medidaPneuRaspado") Double medidaPneuRaspado) {
         try {
             var retornoConsulta = repository.findByMatriz(matriz, medidaPneuRaspado);
-            System.out.println(retornoConsulta.size());
             if(retornoConsulta.size() > 1){
                 throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
             }
@@ -57,4 +56,14 @@ public class RegraController {
             return apiError;
         }
     }
+
+    @DeleteMapping(path = "/api/regra/{id}")
+    public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
+        return repository.findById(id)
+                .map(record -> {
+                    repository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
 }
