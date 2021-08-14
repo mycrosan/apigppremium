@@ -1,4 +1,5 @@
 package br.compneusgppremium.api.controller;
+
 import br.compneusgppremium.api.controller.model.RegraModel;
 import br.compneusgppremium.api.repository.RegraRepository;
 import br.compneusgppremium.api.util.ApiError;
@@ -40,25 +41,27 @@ public class RegraController {
         try {
             return repository.save(regra);
         } catch (Exception ex) {
-            return ex;
+            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY , ex.getCause().getCause().getMessage(), ex);
+            return apiError;
         }
     }
+
     @GetMapping(path = "/api/regra/pesquisa/{matriz}/{medidaPneuRaspado}")
     public Object consultarRegra(@PathVariable("matriz") Integer matriz, @PathVariable("medidaPneuRaspado") Double medidaPneuRaspado) {
         try {
             var retornoConsulta = repository.findByMatriz(matriz, medidaPneuRaspado);
-            if(retornoConsulta.size() > 1){
+            if (retornoConsulta.size() > 1) {
                 throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
             }
             return retornoConsulta.get(0);
         } catch (Exception e) {
-            ApiError apiError = new ApiError(HttpStatus.CONFLICT,"Regra Duplicada", e);
+            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Regra Duplicada", e);
             return apiError;
         }
     }
 
     @DeleteMapping(path = "/api/regra/{id}")
-    public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         return repository.findById(id)
                 .map(record -> {
                     repository.deleteById(id);
