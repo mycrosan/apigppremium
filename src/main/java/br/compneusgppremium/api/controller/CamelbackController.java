@@ -1,7 +1,7 @@
 package br.compneusgppremium.api.controller;
 
-import br.compneusgppremium.api.controller.model.ModeloModel;
-import br.compneusgppremium.api.repository.ModeloRepository;
+import br.compneusgppremium.api.controller.model.PaisModel;
+import br.compneusgppremium.api.repository.PaisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,36 +10,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class ModeloController {
+public class CamelbackController {
 
     @Autowired
-    private ModeloRepository repository;
+    private PaisRepository repository;
 
-    @GetMapping(path = "/api/modelo")
-    public List<ModeloModel> findAll() {
+    @GetMapping(path = "/api/camelback")
+    public List<PaisModel> findAll() {
         var it = repository.findAll();
-        var modelos = new ArrayList<ModeloModel>();
-        it.forEach(e -> modelos.add(e));
-        return modelos;
+        var pais = new ArrayList<PaisModel>();
+        it.forEach(e -> pais.add(e));
+        return pais;
     }
 
-    @GetMapping(path = "/api/modelo/{id}")
+    @GetMapping(path = "/api/camelback/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
         return repository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "/api/modelo")
-    public Object salvar(@RequestBody ModeloModel modelo) {
+    @PostMapping(path = "/api/camelback")
+    public Object salvar(@RequestBody PaisModel pais) {
         try {
-            return repository.save(modelo);
+            return repository.save(pais);
         } catch (Exception ex) {
             return ex;
         }
     }
 
-    @DeleteMapping(path = "/api/modelo/{id}")
+    @DeleteMapping(path = "/api/camelback/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         return repository.findById(id)
                 .map(record -> {

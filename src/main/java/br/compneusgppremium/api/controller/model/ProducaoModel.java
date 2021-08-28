@@ -12,7 +12,7 @@ public class ProducaoModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
-    private PneuModel pneu;
+    private CarcacaModel pneu;
     @Column
     private Double medida_pneu_raspado;
     @Column

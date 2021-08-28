@@ -1,6 +1,5 @@
 package br.compneusgppremium.api.controller;
 
-import br.compneusgppremium.api.controller.model.PneuModel;
 import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;

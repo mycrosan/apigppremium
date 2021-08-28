@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity(name = "carcaca")
 @Data
-public class PneuModel {
+public class CarcacaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -14,6 +14,9 @@ public class PneuModel {
     private String numero_etiqueta;
     @Column
     private String dot;
+    @Column
+    private String status;
+
     @Column
     @Convert(converter = JpaConverterJson.class)
     private String dados;

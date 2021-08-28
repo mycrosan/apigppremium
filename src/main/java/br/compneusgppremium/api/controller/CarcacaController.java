@@ -1,9 +1,7 @@
 package br.compneusgppremium.api.controller;
-
-import br.compneusgppremium.api.controller.model.PneuModel;
-import br.compneusgppremium.api.repository.PneuRepository;
+import br.compneusgppremium.api.controller.model.CarcacaModel;
+import br.compneusgppremium.api.repository.CarcacaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,15 +10,15 @@ import java.util.List;
 
 
 @RestController
-public class PneuController {
+public class CarcacaController {
 
     @Autowired
-    private PneuRepository repository;
+    private CarcacaRepository repository;
 
     @GetMapping(path = "/api/carcaca")
-    public List<PneuModel> findAll() {
+    public List<CarcacaModel> findAll() {
         var it = repository.findAll();
-        var carcacas = new ArrayList<PneuModel>();
+        var carcacas = new ArrayList<CarcacaModel>();
         it.forEach(e -> carcacas.add(e));
         return carcacas;
     }
@@ -33,7 +31,7 @@ public class PneuController {
     }
 
     @PostMapping(path = "/api/carcaca")
-    public Object salvar(@RequestBody PneuModel carcaca) {
+    public Object salvar(@RequestBody CarcacaModel carcaca) {
         try {
             return repository.save(carcaca);
         } catch (Exception e) {

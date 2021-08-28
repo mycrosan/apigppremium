@@ -39,4 +39,12 @@ public class MatrizController {
             return e;
         }
     }
+    @DeleteMapping(path = "/api/matriz/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+        return repository.findById(id)
+                .map(record -> {
+                    repository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.notFound().build());
+    }
 }
