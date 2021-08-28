@@ -1,7 +1,8 @@
 package br.compneusgppremium.api.controller;
 
+import br.compneusgppremium.api.controller.model.CamelbackModel;
 import br.compneusgppremium.api.controller.model.PaisModel;
-import br.compneusgppremium.api.repository.PaisRepository;
+import br.compneusgppremium.api.repository.CamelbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,14 @@ import java.util.List;
 public class CamelbackController {
 
     @Autowired
-    private PaisRepository repository;
+    private CamelbackRepository repository;
 
     @GetMapping(path = "/api/camelback")
-    public List<PaisModel> findAll() {
+    public List<CamelbackModel> findAll() {
         var it = repository.findAll();
-        var pais = new ArrayList<PaisModel>();
-        it.forEach(e -> pais.add(e));
-        return pais;
+        var values = new ArrayList<CamelbackModel>();
+        it.forEach(e -> values.add(e));
+        return values;
     }
 
     @GetMapping(path = "/api/camelback/{id}")
@@ -31,9 +32,9 @@ public class CamelbackController {
     }
 
     @PostMapping(path = "/api/camelback")
-    public Object salvar(@RequestBody PaisModel pais) {
+    public Object salvar(@RequestBody CamelbackModel obj) {
         try {
-            return repository.save(pais);
+            return repository.save(obj);
         } catch (Exception ex) {
             return ex;
         }
