@@ -30,6 +30,13 @@ public class CarcacaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping(path = "/api/carcaca/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id) {
+        return repository.findById(id)
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping(path = "/api/carcaca")
     public Object salvar(@RequestBody CarcacaModel carcaca) {
         try {
@@ -38,6 +45,8 @@ public class CarcacaController {
             return e;
         }
     }
+
+
 
     @DeleteMapping(path = "/api/carcaca/{id}")
     public ResponseEntity <?> delete(@PathVariable("id") Integer id) {

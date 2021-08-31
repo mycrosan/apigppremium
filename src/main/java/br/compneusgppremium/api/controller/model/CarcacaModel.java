@@ -3,6 +3,7 @@ package br.compneusgppremium.api.controller.model;
 import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "carcaca")
 @Data
@@ -33,4 +34,7 @@ public class CarcacaModel {
     @Column
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
+
+    @Column
+    private Date dt_create;
 }

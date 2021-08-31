@@ -15,8 +15,6 @@ public class RegraModel {
     @Column
     private Double tamanho_max;
     @Column
-    private String camelback;
-    @Column
     private String anti_quebra_1;
     @Column
     private String anti_quebra_2;
@@ -34,4 +32,6 @@ public class RegraModel {
     private ModeloModel modelo;
     @ManyToOne
     private PaisModel pais;
+    @ManyToOne
+    private CamelbackModel camelback;
 }
