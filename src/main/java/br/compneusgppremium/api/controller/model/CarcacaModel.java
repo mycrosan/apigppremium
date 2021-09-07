@@ -35,6 +35,6 @@ public class CarcacaModel {
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
 
-    @Column
-    private Date dt_create;
+//    @Column
+//    private Date dt_create;
 }

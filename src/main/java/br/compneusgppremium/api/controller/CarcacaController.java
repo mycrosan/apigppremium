@@ -1,7 +1,9 @@
 package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.CarcacaModel;
 import br.compneusgppremium.api.repository.CarcacaRepository;
+import br.compneusgppremium.api.util.ApiError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +33,17 @@ public class CarcacaController {
     }
 
     @PutMapping(path = "/api/carcaca/{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Integer id) {
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody CarcacaModel carcaca) {
         return repository.findById(id)
-                .map(record -> ResponseEntity.ok().body(record))
-                .orElse(ResponseEntity.notFound().build());
+                .map(record -> {
+                    record.setNumero_etiqueta(carcaca.getNumero_etiqueta());
+                    record.setDot(carcaca.getDot());
+                    record.setModelo(carcaca.getModelo());
+                    record.setMedida(carcaca.getMedida());
+                    record.setPais(carcaca.getPais());
+                    CarcacaModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(path = "/api/carcaca")
@@ -46,8 +55,6 @@ public class CarcacaController {
         }
     }
 
-
-
     @DeleteMapping(path = "/api/carcaca/{id}")
     public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
         return repository.findById(id)
@@ -57,12 +64,26 @@ public class CarcacaController {
                 }).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(path = "/api/pesquisa/carcaca/{etiqueta}")
+//    @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
+//    public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
+//        try {
+//            return repository.findByEtiqueta(etiqueta);
+//        } catch (Exception e) {
+//            return e;
+//        }
+//    }
+
+    @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
     public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
         try {
-            return repository.findByEtiqueta(etiqueta);
+            var retornoConsulta = repository.findByEtiqueta(etiqueta);
+            if (retornoConsulta.size() > 1) {
+                throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
+            }
+            return retornoConsulta.get(0);
         } catch (Exception e) {
-            return e;
+            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, e);
+            return apiError;
         }
     }
 }
