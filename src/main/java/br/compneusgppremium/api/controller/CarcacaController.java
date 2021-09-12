@@ -79,8 +79,10 @@ public class CarcacaController {
             var retornoConsulta = repository.findByEtiqueta(etiqueta);
             if (retornoConsulta.size() > 1) {
                 throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
+            }else if (retornoConsulta.size() == 1) {
+                return retornoConsulta.get(0);
             }
-            return retornoConsulta.get(0);
+            throw new RuntimeException("Carcaça etiqueta " + etiqueta + " não cadastrada");
         } catch (Exception e) {
             ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, e);
             return apiError;
