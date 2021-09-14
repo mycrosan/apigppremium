@@ -40,26 +40,28 @@ public class RegraController {
     public Object salvar(@RequestBody RegraModel regra) {
 
         try {
-            var retornoConsulta = repository.findByRange(regra.getTamanho_min(), regra.getTamanho_max());
+            var retornoConsulta = repository.findByRange(regra.getMatriz().getId(), regra.getMedida().getId(), regra.getModelo().getId(), regra.getPais().getId(), regra.getTamanho_min(), regra.getTamanho_max());
             if (retornoConsulta.size() > 0) {
                 throw new RuntimeException("O sistema encontrou uma regra para os parâmetros enviados, revise as regras cadastradas");
             }
             return repository.save(regra);
         } catch (Exception ex) {
             System.out.println(ex);
-            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY , ex.getCause() !=null ? ex.getCause().getCause().getMessage(): "Erro", ex);
+            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro", ex);
             return apiError;
         }
     }
 
-    @GetMapping(path = "/api/regra/pesquisa/{matriz}/{medidaPneuRaspado}")
-    public Object consultarRegra(@PathVariable("matriz") Integer matriz, @PathVariable("medidaPneuRaspado") Double medidaPneuRaspado) {
+    @GetMapping(path = "/api/regra/pesquisa/{matriz}/{medida}/{modelo}/{pais}/{medidaPneuRaspado}")
+    public Object consultarRegra(@PathVariable("matriz") Integer matriz, @PathVariable("medida") Integer medida, @PathVariable("modelo") Integer modelo, @PathVariable("pais") Integer pais, @PathVariable("medidaPneuRaspado") Double medidaPneuRaspado) {
         try {
-            var retornoConsulta = repository.findByMatriz(matriz, medidaPneuRaspado);
+            var retornoConsulta = repository.findRule(matriz, medida, modelo, pais, medidaPneuRaspado);
             if (retornoConsulta.size() > 1) {
                 throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
+            } else if (retornoConsulta.size() == 1) {
+                return retornoConsulta.get(0);
             }
-            return retornoConsulta.get(0);
+            throw new RuntimeException("Nenhuma regra encontrada!");
         } catch (Exception e) {
             ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Algo deu errado", e);
             return apiError;
