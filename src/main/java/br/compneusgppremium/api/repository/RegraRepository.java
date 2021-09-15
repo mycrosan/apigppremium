@@ -18,7 +18,7 @@ public interface RegraRepository extends CrudRepository<RegraModel, Integer> {
             "and (r.pais.id = :paisId)")
     public List<Object> findRule(@Param("matrizId") Integer matrizId, @Param("medidaId") Integer medidaId, @Param("modeloId") Integer modeloId, @Param("paisId") Integer paisId, @Param("medidaPneuRaspado") Double medidaPneuRaspado);
 
-    @Query("from regra r where (:tamanhoMin >= tamanho_min and :tamanhoMin <= tamanho_max) or (:tamanhoMax >= tamanho_min and :tamanhoMax <= tamanho_max)"+
+    @Query("from regra r where ((:tamanhoMin >= tamanho_min and :tamanhoMin <= tamanho_max) or (:tamanhoMax >= tamanho_min and :tamanhoMax <= tamanho_max))"+
             "and (r.matriz.id = :matrizId)" +
             "and (r.medida.id = :medidaId)" +
             "and (r.modelo.id = :modeloId)" +
