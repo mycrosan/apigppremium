@@ -15,14 +15,6 @@ public class RegraModel {
     @Column
     private Double tamanho_max;
     @Column
-    private String anti_quebra_1;
-    @Column
-    private String anti_quebra_2;
-    @Column
-    private String anti_quebra_3;
-    @Column
-    private String espessuramento;
-    @Column
     private String tempo;
     @ManyToOne
     private MatrizModel matriz;
@@ -34,4 +26,12 @@ public class RegraModel {
     private PaisModel pais;
     @ManyToOne
     private CamelbackModel camelback;
+    @ManyToOne
+    private AntiquebraModel anti_quebra_1;
+    @ManyToOne
+    private AntiquebraModel anti_quebra_2;
+    @ManyToOne
+    private AntiquebraModel anti_quebra_3;
+    @ManyToOne
+    private EspessuramentoModel espessuramento;
 }
