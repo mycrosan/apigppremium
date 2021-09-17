@@ -27,11 +27,11 @@ public class RegraModel {
     @ManyToOne
     private CamelbackModel camelback;
     @ManyToOne
-    private AntiquebraModel anti_quebra_1;
-    @ManyToOne
-    private AntiquebraModel anti_quebra_2;
-    @ManyToOne
-    private AntiquebraModel anti_quebra_3;
-    @ManyToOne
     private EspessuramentoModel espessuramento;
+    @ManyToOne
+    private AntiquebraModel antiquebra1;
+    @ManyToOne
+    private AntiquebraModel antiquebra2;
+    @ManyToOne
+    private AntiquebraModel antiquebra3;
 }
