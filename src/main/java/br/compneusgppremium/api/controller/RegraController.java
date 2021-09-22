@@ -1,5 +1,6 @@
 package br.compneusgppremium.api.controller;
 
+import br.compneusgppremium.api.controller.model.CarcacaModel;
 import br.compneusgppremium.api.controller.model.RegraModel;
 import br.compneusgppremium.api.repository.RegraRepository;
 import br.compneusgppremium.api.util.ApiError;
@@ -50,6 +51,27 @@ public class RegraController {
             ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro", ex);
             return apiError;
         }
+    }
+
+    @PutMapping(path = "/api/regra/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody RegraModel regra) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setTamanho_min(regra.getTamanho_min());
+                    record.setTamanho_max(regra.getTamanho_max());
+                    record.setAntiquebra1(regra.getAntiquebra1());
+                    record.setAntiquebra2(regra.getAntiquebra2());
+                    record.setAntiquebra3(regra.getAntiquebra3());
+                    record.setEspessuramento(regra.getEspessuramento());
+                    record.setTempo(regra.getTempo());
+                    record.setCamelback(regra.getCamelback());
+                    record.setMatriz(regra.getMatriz());
+                    record.setMedida(regra.getMedida());
+                    record.setModelo(regra.getModelo());
+                    record.setPais(regra.getPais());
+                    RegraModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(path = "/api/regra/pesquisa/{matriz}/{medida}/{modelo}/{pais}/{medidaPneuRaspado}")
