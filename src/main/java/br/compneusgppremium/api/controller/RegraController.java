@@ -85,7 +85,7 @@ public class RegraController {
             }
             throw new RuntimeException("Nenhuma regra encontrada!");
         } catch (Exception ex) {
-            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "O sistema encontrou um problema!", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "O sistema encontrou um erro!", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
     }
