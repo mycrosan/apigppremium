@@ -55,13 +55,28 @@ public class CarcacaController {
         }
     }
 
+//    @DeleteMapping(path = "/api/carcaca/{id}")
+//    public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
+//        return repository.findById(id)
+//                .map(record -> {
+//                    repository.deleteById(id);
+//                    return ResponseEntity.ok().build();
+//                }).orElse(ResponseEntity.notFound().build());
+//    }
+
     @DeleteMapping(path = "/api/carcaca/{id}")
-    public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
-        return repository.findById(id)
+    public Object delete(@PathVariable("id") Integer id) {
+        try {
+            return repository.findById(id)
                 .map(record -> {
                     repository.deleteById(id);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
+        } catch (Exception ex) {
+            System.out.println(ex);
+            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Não foi possível excluir a carçaca " + id, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+            return apiError;
+        }
     }
 
 //    @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
@@ -83,8 +98,8 @@ public class CarcacaController {
                 return retornoConsulta.get(0);
             }
             throw new RuntimeException("Carcaça etiqueta " + etiqueta + " não cadastrada");
-        } catch (Exception e) {
-            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, e);
+        } catch (Exception ex) {
+            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
     }

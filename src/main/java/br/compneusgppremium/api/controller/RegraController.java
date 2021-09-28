@@ -48,7 +48,7 @@ public class RegraController {
             return repository.save(regra);
         } catch (Exception ex) {
             System.out.println(ex);
-            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro", ex);
+            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Regra duplicada", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
     }
@@ -84,8 +84,8 @@ public class RegraController {
                 return retornoConsulta.get(0);
             }
             throw new RuntimeException("Nenhuma regra encontrada!");
-        } catch (Exception e) {
-            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Algo deu errado", e);
+        } catch (Exception ex) {
+            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "O sistema encontrou um problema!", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
     }

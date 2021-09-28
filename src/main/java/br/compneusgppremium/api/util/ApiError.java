@@ -15,7 +15,16 @@ public class ApiError {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
     private String message;
+    private String error;
     private String debugMessage;
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
 
     public HttpStatus getStatus() {
         return status;
@@ -59,33 +68,13 @@ public class ApiError {
 
     private List<ApiSubError> subErrors;
 
-    public ApiError(HttpStatus status, String message, Throwable ex) {
+    public ApiError(HttpStatus status, String message, Throwable ex, String error) {
         this.status = status;
         this.message = message;
+        this.error = error;
         this.debugMessage = ex.getLocalizedMessage();
         timestamp = LocalDateTime.now();
     }
-
-//    public ApiError() {
-//
-//    }
-
-//    ApiError() {
-//        timestamp = LocalDateTime.now();
-//    }
-
-//    ApiError(HttpStatus status) {
-//        this();
-//        this.status = status;
-//    }
-//
-//    ApiError(HttpStatus status, Throwable ex) {
-//        this();
-//        this.status = status;
-//        this.message = "Unexpected error";
-//        this.debugMessage = ex.getLocalizedMessage();
-//    }
-
 
 }
 abstract class ApiSubError {
