@@ -55,14 +55,16 @@ public class CarcacaController {
         }
     }
 
-//    @DeleteMapping(path = "/api/carcaca/{id}")
-//    public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
-//        return repository.findById(id)
-//                .map(record -> {
-//                    repository.deleteById(id);
-//                    return ResponseEntity.ok().build();
-//                }).orElse(ResponseEntity.notFound().build());
-//    }
+    //@PostMapping(path = "/api/caracaca")
+    //public Object salvar(@RequestBody CarcacaModel fotos) {
+       // try {
+           // return repository.save(fotos);
+        //} catch (Exception e) {
+          //  return e;
+        //}
+    //}
+
+
 
     @DeleteMapping(path = "/api/carcaca/{id}")
     public Object delete(@PathVariable("id") Integer id) {

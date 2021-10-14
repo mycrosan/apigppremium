@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.CamelbackModel;
+import br.compneusgppremium.api.controller.model.MedidaModel;
 import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.CamelbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,15 @@ public class CamelbackController {
         } catch (Exception ex) {
             return ex;
         }
+    }
+    @PutMapping(path = "/api/camelback/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody CamelbackModel camelback ) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setDescricao(camelback.getDescricao());
+                    CamelbackModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/api/camelback/{id}")

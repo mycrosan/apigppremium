@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.MarcaModel;
+import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.MarcaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class MarcaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     @PostMapping(path = "/api/marca")
     public Object salvar(@RequestBody MarcaModel marca) {
         try {
@@ -37,6 +39,15 @@ public class MarcaController {
         } catch (Exception ex) {
             return ex;
         }
+    }
+    @PutMapping(path = "/api/marca/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody MarcaModel marca) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setDescricao(marca.getDescricao());
+                    MarcaModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/api/marca/{id}")

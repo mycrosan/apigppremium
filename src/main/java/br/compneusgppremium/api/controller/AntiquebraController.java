@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.AntiquebraModel;
+import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.AntiquebraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,15 @@ public class AntiquebraController {
         } catch (Exception ex) {
             return ex;
         }
+    }
+    @PutMapping(path = "/api/antiquebra/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody AntiquebraModel antiquebra) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setDescricao(antiquebra.getDescricao());
+                    AntiquebraModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/api/antiquebra/{id}")

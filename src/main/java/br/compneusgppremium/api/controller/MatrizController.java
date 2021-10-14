@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.MatrizModel;
+import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.MatrizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,15 @@ public class MatrizController {
         } catch (Exception e) {
             return e;
         }
+    }
+    @PutMapping(path = "/api/matriz/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody MatrizModel matriz) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setDescricao(matriz.getDescricao());
+                    MatrizModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
     @DeleteMapping(path = "/api/matriz/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
