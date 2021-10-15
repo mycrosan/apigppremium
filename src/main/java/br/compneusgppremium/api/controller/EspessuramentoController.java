@@ -1,7 +1,6 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.EspessuramentoModel;
-import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.EspessuramentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
