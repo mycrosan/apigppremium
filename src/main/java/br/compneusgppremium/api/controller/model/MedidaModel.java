@@ -10,6 +10,5 @@ public class MedidaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    @Column
     public String descricao;
 }

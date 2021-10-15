@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.ModeloModel;
+import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.ModeloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,15 @@ public class ModeloController {
         } catch (Exception ex) {
             return ex;
         }
+    }
+    @PutMapping(path = "/api/modelo/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody ModeloModel modelo) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setDescricao(modelo.getDescricao());
+                    ModeloModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/api/modelo/{id}")

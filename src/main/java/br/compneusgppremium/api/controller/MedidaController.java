@@ -1,6 +1,6 @@
 package br.compneusgppremium.api.controller;
-
 import br.compneusgppremium.api.controller.model.MedidaModel;
+import br.compneusgppremium.api.controller.model.PaisModel;
 import br.compneusgppremium.api.repository.MedidaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +38,17 @@ public class MedidaController {
             return ex;
         }
     }
+
+    @PutMapping(path = "/api/medida/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody MedidaModel medida) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setDescricao(medida.getDescricao());
+                    MedidaModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping(path = "/api/medida/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         return repository.findById(id)
