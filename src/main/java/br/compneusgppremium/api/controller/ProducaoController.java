@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.ProducaoModel;
+import br.compneusgppremium.api.controller.model.RegraModel;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,19 @@ public class ProducaoController {
         } catch (Exception ex) {
             return ex;
         }
+    }
+
+    @PutMapping(path = "/api/producao/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody ProducaoModel producao) {
+        return repository.findById(id)
+                .map(record -> {
+                    record.setCarcaca(producao.getCarcaca());
+                    record.setMedida_pneu_raspado(producao.getMedida_pneu_raspado());
+                    record.setDados(producao.getDados());
+                    record.setRegra(producao.getRegra());
+                    ProducaoModel updated = repository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/api/producao/{id}")
