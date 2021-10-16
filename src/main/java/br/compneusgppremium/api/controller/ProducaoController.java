@@ -1,7 +1,8 @@
 package br.compneusgppremium.api.controller;
 
+import br.compneusgppremium.api.controller.model.CarcacaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
-import br.compneusgppremium.api.controller.model.RegraModel;
+import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,13 @@ import java.util.List;
 public class ProducaoController {
 
     @Autowired
-    private ProducaoRepository repository;
+    private ProducaoRepository producaoRepository;
+    @Autowired
+    private CarcacaRepository carcacaRepository;
 
     @GetMapping(path = "/api/producao")
     public List<ProducaoModel> findAll() {
-        var it = repository.findAll();
+        var it = producaoRepository.findAll();
         var producaos = new ArrayList<ProducaoModel>();
         it.forEach(e -> producaos.add(e));
         return producaos;
@@ -27,7 +30,7 @@ public class ProducaoController {
 
     @GetMapping(path = "/api/producao/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
-        return repository.findById(id)
+        return producaoRepository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -35,7 +38,15 @@ public class ProducaoController {
     @PostMapping(path = "/api/producao")
     public Object salvar(@RequestBody ProducaoModel producao) {
         try {
-            return repository.save(producao);
+
+            return carcacaRepository.findById(producao.getCarcaca().getId())
+                    .map(record -> {
+                        record.setStatus("in_production");
+                        CarcacaModel updated = carcacaRepository.save(record);
+                        return producaoRepository.save(producao);
+                    });
+
+
         } catch (Exception ex) {
             return ex;
         }
@@ -43,22 +54,22 @@ public class ProducaoController {
 
     @PutMapping(path = "/api/producao/{id}")
     public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody ProducaoModel producao) {
-        return repository.findById(id)
+        return producaoRepository.findById(id)
                 .map(record -> {
                     record.setCarcaca(producao.getCarcaca());
                     record.setMedida_pneu_raspado(producao.getMedida_pneu_raspado());
                     record.setDados(producao.getDados());
                     record.setRegra(producao.getRegra());
-                    ProducaoModel updated = repository.save(record);
+                    ProducaoModel updated = producaoRepository.save(record);
                     return ResponseEntity.ok().body(updated);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(path = "/api/producao/{id}")
-    public ResponseEntity <?> delete(@PathVariable("id") Integer id) {
-        return repository.findById(id)
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+        return producaoRepository.findById(id)
                 .map(record -> {
-                    repository.deleteById(id);
+                    producaoRepository.deleteById(id);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
     }

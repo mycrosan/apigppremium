@@ -15,8 +15,6 @@
     <description>Api GP</description>
     <properties>
         <java.version>11</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
 
         <!--    Descomentar para gerar war-->
         <!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
@@ -137,14 +135,6 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>16</source>
-                    <target>16</target>
                 </configuration>
             </plugin>
         </plugins>

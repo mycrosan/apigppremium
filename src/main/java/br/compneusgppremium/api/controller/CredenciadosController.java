@@ -35,8 +35,8 @@ public class CredenciadosController {
 
     @PostMapping(path = "/api/credenciados")
     public Object salvar(@RequestBody CredenciadosModel credenciados) {
-
         try {
+            credenciados.setStatus("pendente");
             return repository.save(credenciados);
         } catch (Exception ex) {
             ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Algo deu errado!", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
@@ -65,7 +65,7 @@ public class CredenciadosController {
                     record.setCep(credenciados.getCep());
                     record.setLat(credenciados.getLat());
                     record.setLog(credenciados.getLog());
-                    record.setStatus(credenciados.getStatus());
+//                    record.setStatus(credenciados.getStatus());
                     CredenciadosModel updated = repository.save(record);
                     return ResponseEntity.ok().body(updated);
                 }).orElse(ResponseEntity.notFound().build());

@@ -49,6 +49,7 @@ public class CarcacaController {
     @PostMapping(path = "/api/carcaca")
     public Object salvar(@RequestBody CarcacaModel carcaca) {
         try {
+            carcaca.setStatus("start");
             return repository.save(carcaca);
         } catch (Exception e) {
             return e;
