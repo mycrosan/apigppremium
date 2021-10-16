@@ -23,10 +23,11 @@ public class ProducaoController {
     @GetMapping(path = "/api/producao")
     public List<ProducaoModel> findAll() {
         var it = producaoRepository.findAll();
-        var producaos = new ArrayList<ProducaoModel>();
-        it.forEach(e -> producaos.add(e));
-        return producaos;
+        var values = new ArrayList<ProducaoModel>();
+        it.forEach(e -> values.add(e));
+        return values;
     }
+
 
     @GetMapping(path = "/api/producao/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
@@ -38,15 +39,12 @@ public class ProducaoController {
     @PostMapping(path = "/api/producao")
     public Object salvar(@RequestBody ProducaoModel producao) {
         try {
-
             return carcacaRepository.findById(producao.getCarcaca().getId())
                     .map(record -> {
                         record.setStatus("in_production");
                         CarcacaModel updated = carcacaRepository.save(record);
                         return producaoRepository.save(producao);
                     });
-
-
         } catch (Exception ex) {
             return ex;
         }
@@ -69,6 +67,12 @@ public class ProducaoController {
     public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
         return producaoRepository.findById(id)
                 .map(record -> {
+                    carcacaRepository.findById(record.getCarcaca().getId())
+                            .map(record2 -> {
+                                record2.setStatus("start");
+                                CarcacaModel updated = carcacaRepository.save(record2);
+                                return ResponseEntity.ok().body(updated);
+                            });
                     producaoRepository.deleteById(id);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
