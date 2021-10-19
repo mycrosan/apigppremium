@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class GpPremiumApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(GpPremiumApplication.class, args);
 	}
 
