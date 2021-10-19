@@ -6,13 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+
 @RestController
 public class CarcacaController {
+
+    // caminho da imagem
+    private static String caminhoImagnes = "E:\\imagens";
 
     @Autowired
     private CarcacaRepository repository;
@@ -47,24 +54,15 @@ public class CarcacaController {
     }
 
     @PostMapping(path = "/api/carcaca")
-    public Object salvar(@RequestBody CarcacaModel carcaca) {
+    public Object salvar(@RequestBody CarcacaModel carcaca, @RequestParam("file") MultipartFile arquivo) {
         try {
             carcaca.setStatus("start");
             return repository.save(carcaca);
         } catch (Exception e) {
             return e;
         }
+
     }
-
-    //@PostMapping(path = "/api/caracaca")
-    //public Object salvar(@RequestBody CarcacaModel fotos) {
-       // try {
-           // return repository.save(fotos);
-        //} catch (Exception e) {
-          //  return e;
-        //}
-    //}
-
 
 
     @DeleteMapping(path = "/api/carcaca/{id}")
@@ -82,14 +80,15 @@ public class CarcacaController {
         }
     }
 
-//    @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
-//    public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
-//        try {
-//            return repository.findByEtiqueta(etiqueta);
-//        } catch (Exception e) {
-//            return e;
-//        }
-//    }
+    //public class ImagemController {
+      //  @Autowired
+        //CarcacaModel imagemModel;
+        //@PostMapping(path = "/api/carcaca")
+        //public void uploadFile(@RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
+          //  imagemModel.uploadFile(file);
+       // }
+    //}
+
 
     @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
     public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {

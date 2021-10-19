@@ -31,7 +31,6 @@ public class CamelbackController {
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
-
     @PostMapping(path = "/api/camelback")
     public Object salvar(@RequestBody CamelbackModel obj) {
         try {

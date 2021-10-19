@@ -3,11 +3,18 @@ package br.compneusgppremium.api.controller.model;
 import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
 import javax.persistence.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 @Entity(name = "carcaca")
 @Data
+@Service
 public class CarcacaModel {
+
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -35,6 +42,14 @@ public class CarcacaModel {
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
 
+
+
+    // imagem
+
+   // public void uploadFile(MultipartFile file) throws IllegalStateException,IOException {
+     //   file.transferTo(new File("E:\\imagens\\"+file.getOriginalFilename()));
+    }
+
 //    @Column
 //    private Date dt_create;
-}
+//}
