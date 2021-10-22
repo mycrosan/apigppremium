@@ -1,91 +1,67 @@
 package br.compneusgppremium.api.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import br.compneusgppremium.api.message.ResponseMessage;
+import br.compneusgppremium.api.service.FilesStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+@Controller
+@CrossOrigin("http://localhost:8081")
+public class FileUploadController {
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+	@Autowired
+	FilesStorageService storageService;
 
-@CrossOrigin
-@RestController
-@RequestMapping("api/upload")
-class ImageController {
-    @PostMapping
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file)
-    {
-        if (file.isEmpty()){
-            throw new RuntimeException("Arquivo não valido!");
-        }
-        String folder = "/Users/sandy/Documents/Projetos/gp-premium";
-        try {
-            Path pathFolder = Paths.get(folder);
-            Files.createDirectories(pathFolder);
+	@PostMapping("/api/upload")
+	public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+		String message = "";
+		try {
+			List<String> fileNames = new ArrayList<>();
 
-            Path pathFile = Paths.get(folder + file.getOriginalFilename());
-            Files.write(pathFile, file.getBytes());
+			Arrays.asList(files).stream().forEach(file -> {
+				storageService.save(file);
+				fileNames.add(file.getOriginalFilename());
+			});
 
+			message = "Uploaded the files successfully: " + fileNames;
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+		} catch (Exception e) {
+			message = "Falha ao fazer o upload do arquivo!";
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+		}
+	}
 
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("Tudo ok Picareta Dev");
-        return new ResponseEntity(HttpStatus.OK);
-    }
+//	@GetMapping("/files")
+//	public ResponseEntity<List<FileInfo>> getListFiles() {
+//		List<FileInfo> fileInfos = storageService.loadAll().map(path -> {
+//			String filename = path.getFileName().toString();
+//			String url = MvcUriComponentsBuilder
+//					.fromMethodName(FilesController.class, "getFile", path.getFileName().toString()).build().toString();
+//
+//			return new FileInfo(filename, url);
+//		}).collect(Collectors.toList());
+//
+//		return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
+//	}
 
+	@GetMapping("/files/{filename:.+}")
+	public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+		Resource file = storageService.load(filename);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+	}
 }
-
-
-
-//@Controller
-//class FileUploadController {
-//
-//    private final StorageService storageService;
-//
-//    @Autowired
-//    public FileUploadController(StorageService storageService) {
-//        this.storageService = storageService;
-//    }
-//
-//    @GetMapping("/api/upload")
-//    public String listUploadedFiles(Model model) throws IOException {
-//
-//        model.addAttribute("files", storageService.loadAll().map(
-//                path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-//                        "serveFile", path.getFileName().toString()).build().toUri().toString())
-//                .collect(Collectors.toList()));
-//
-//        return "uploadForm";
-//    }
-//
-//    @GetMapping("/files/{filename:.+}")
-//    @ResponseBody
-//    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-//
-//        Resource file = storageService.loadAsResource(filename);
-//        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-//                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-//    }
-//
-//    @PostMapping("/api/upload")
-//    public String handleFileUpload(@RequestParam("file") MultipartFile file,
-//                                   RedirectAttributes redirectAttributes) {
-//
-//        storageService.store(file);
-//        redirectAttributes.addFlashAttribute("message",
-//                "You successfully uploaded " + file.getOriginalFilename() + "!");
-//
-//        return "redirect:/";
-//    }
-//
-//    @ExceptionHandler(StorageFileNotFoundException.class)
-//    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-//        return ResponseEntity.notFound().build();
-//    }
-//
-//}
