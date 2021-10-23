@@ -28,60 +28,45 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class FileUploadController {
 
-	@Autowired
-	FilesStorageService storageService;
+    @Autowired
+    FilesStorageService storageService;
 
-	@PostMapping("/api/upload")
-	public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
-		String message = "";
+    @PostMapping("/api/upload")
+    public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+        String message = "";
 
-		try {
-			List<String> fileNames = new ArrayList<>();
+        try {
+            List<String> fileNames = new ArrayList<>();
 
-			Arrays.asList(files).stream().forEach(file -> {
+            Arrays.asList(files).stream().forEach(file -> {
 
-				String name = file.getOriginalFilename();
-				String fname="", ext="", totalname="";
-				System.out.println("\n\nFile name : " + name + "\n\n");
-				Pattern p = Pattern.compile(".[a-zA-Z0-9]+");//find all matches where first char is '.' then alphanumeric
-				Matcher m1 = p.matcher(name);//it will store all matches but we want last match eg abc.def.jpg we need .jpg ext
-				while (m1.find())
-				{
-					ext = m1.group();
-				}
+                String name = file.getOriginalFilename();
+                String fname = "", ext = "", totalname = "";
+                Pattern p = Pattern.compile(".[a-zA-Z0-9]+");//find all matches where first char is '.' then alphanumeric
+                Matcher m1 = p.matcher(name);//it will store all matches but we want last match eg abc.def.jpg we need .jpg ext
 
-//				fname = name.substring(0, name.length()-(ext.length()));
-				fname = UUID.randomUUID().toString();
-				System.out.println("Name : " + fname);
-				System.out.println("Ext  : " + ext);
-				totalname = fname;
-				if(ext != "")//if ext is there concat
-					totalname += ext;
-				System.out.println("Full name  : " + totalname);
+                while (m1.find()) {
+                    ext = m1.group();
+                }
 
-				storageService.save(file);
-				fileNames.add(totalname);
-				try {
-					String filename = file.getOriginalFilename(); // Give a random filename here.
-					byte[] bytes = file.getBytes();
-					String insPath = "uploads/" + totalname;
-					// Directory path where you want to save ;
-					Files.write(Paths.get(insPath), bytes);
-				}
-				catch (IOException e) {
-					System.out.println(e);
-				}
+                fname = UUID.randomUUID().toString();
 
-			});
+                totalname = fname;
+                if (ext != "")//if ext is there concat
+                    totalname += ext;
 
-			message = "Uploaded the files successfully: " + fileNames;
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
-		} catch (Exception e) {
-			message = "Falha ao fazer o upload do arquivo!";
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-		}
-	}
+                storageService.save(file);
+                fileNames.add(totalname);
 
+            });
+
+            message = "Uploaded the files successfully: " + fileNames;
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+        } catch (Exception e) {
+            message = "Falha ao fazer o upload do arquivo!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
 
 
 //	@GetMapping("/files")
@@ -97,10 +82,11 @@ public class FileUploadController {
 //		return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
 //	}
 
-	@GetMapping("/files/{filename:.+}")
-	public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-		Resource file = storageService.load(filename);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-	}
+    @GetMapping("/files/{filename:.+}")
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+        Resource file = storageService.load(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
 }
