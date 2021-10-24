@@ -2,17 +2,16 @@ package br.compneusgppremium.api.controller;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import br.compneusgppremium.api.message.ResponseMessage;
 import br.compneusgppremium.api.service.FilesStorageService;
-import org.hibernate.internal.build.AllowSysOut;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -40,24 +39,22 @@ public class FileUploadController {
 
             Arrays.asList(files).stream().forEach(file -> {
 
-                String name = file.getOriginalFilename();
-                String fname = "", ext = "", totalname = "";
-                Pattern p = Pattern.compile(".[a-zA-Z0-9]+");//find all matches where first char is '.' then alphanumeric
-                Matcher m1 = p.matcher(name);//it will store all matches but we want last match eg abc.def.jpg we need .jpg ext
+                var ext = FilenameUtils.getExtension(file.getOriginalFilename());
+                var fname = UUID.randomUUID().toString();
 
-                while (m1.find()) {
-                    ext = m1.group();
-                }
-
-                fname = UUID.randomUUID().toString();
-
-                totalname = fname;
                 if (ext != "")//if ext is there concat
-                    totalname += ext;
+                    fname += "." + ext;
 
-                storageService.save(file);
-                fileNames.add(totalname);
-
+                try {
+                    String filename = file.getOriginalFilename(); // Give a random filename here.
+                    byte[] bytes = file.getBytes();
+                    Path insPath = Path.of(Paths.get("uploads/credenciados").toString());
+                    String insPathN = "uploads//credenciados/" + fname;
+                    Files.write(Paths.get(insPathN), bytes);
+                    fileNames.add(fname);
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
             });
 
             message = "Uploaded the files successfully: " + fileNames;
@@ -89,4 +86,7 @@ public class FileUploadController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
+    private Object renameValueToUid() {
+        return null;
+    }
 }
