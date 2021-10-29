@@ -1,5 +1,6 @@
 package br.compneusgppremium.api.controller.model;
 
+import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ public class CredenciadosModel {
     @Column
     private String contrato_social;
     @Column
+    @Convert(converter = JpaConverterJson.class)
     private String fotos;
     @Column
     private String cnpj;

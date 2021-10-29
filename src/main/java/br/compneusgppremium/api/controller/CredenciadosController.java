@@ -1,16 +1,22 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.CredenciadosModel;
+import br.compneusgppremium.api.message.ResponseMessage;
 import br.compneusgppremium.api.repository.CredenciadosRepository;
 import br.compneusgppremium.api.util.ApiError;
+import com.google.gson.Gson;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 
 @RestController
@@ -36,13 +42,54 @@ public class CredenciadosController {
 
     @PostMapping(path = "/api/credenciados")
     public Object salvar(@RequestPart("files") MultipartFile[] files, @RequestPart("data") CredenciadosModel credenciados) {
+        String message = "";
+
+
         try {
-            credenciados.setStatus("pendente");
-            return repository.save(credenciados);
-        } catch (Exception ex) {
-            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Algo deu errado!", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
-            return apiError;
+            List<String> fileNames = new ArrayList<>();
+
+            Arrays.asList(files).stream().forEach(file -> {
+
+                var ext = FilenameUtils.getExtension(file.getOriginalFilename());
+                var fname = UUID.randomUUID().toString();
+
+                if (ext != "")//if ext is there concat
+                    fname += "." + ext;
+
+                try {
+                    String filename = file.getOriginalFilename(); // Give a random filename here.
+                    byte[] bytes = file.getBytes();
+                    Path insPath = Path.of(Paths.get("uploads/credenciados").toString());
+                    String insPathN = "uploads//credenciados/" + fname;
+                    Files.write(Paths.get(insPathN), bytes);
+                    fileNames.add(fname);
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
+            });
+
+            try {
+                credenciados.setContrato_social(files[2].getOriginalFilename());
+                credenciados.setFotos(this.convertToJson(fileNames));
+                credenciados.setStatus("pendente");
+                repository.save(credenciados);
+            } catch (Exception ex) {
+                ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Algo deu errado!", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+                return apiError;
+            }
+
+            message = "Uploaded the files successfully: " + fileNames;
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+        } catch (Exception e) {
+            message = "Falha ao fazer o upload do arquivo!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
+
+
+    }
+
+    public String convertToJson(List<String> fileNames){
+        return new Gson().toJson(fileNames);
     }
 
     @PutMapping(path = "/api/credenciados/{id}")
