@@ -43,8 +43,6 @@ public class CredenciadosController {
     @PostMapping(path = "/api/credenciados")
     public Object salvar(@RequestPart("files") MultipartFile[] files, @RequestPart("data") CredenciadosModel credenciados) {
         String message = "";
-
-
         try {
             List<String> fileNames = new ArrayList<>();
 
@@ -88,7 +86,7 @@ public class CredenciadosController {
 
     }
 
-    public String convertToJson(List<String> fileNames){
+    public String convertToJson(List<String> fileNames) {
         return new Gson().toJson(fileNames);
     }
 
