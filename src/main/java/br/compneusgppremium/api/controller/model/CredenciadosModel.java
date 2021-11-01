@@ -52,6 +52,6 @@ public class CredenciadosModel {
     private String status;
     @Column
     @Convert(converter = JpaConverterJson.class)
-    public String dados_adicionais;
+    private String dados_adicionais;
 
 }
