@@ -17,8 +17,7 @@ public class GpPremiumApplication {
 	@Bean
 	CommandLineRunner init(FilesStorageService filesStorageService) {
 		return (args) -> {
-			filesStorageService.deleteAll();
-			filesStorageService.init();
+//			filesStorageService.init();
 		};
 	}
 }
