@@ -10,36 +10,30 @@
     </parent>
     <groupId>br.compneusgppremium</groupId>
     <artifactId>gp-premium</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <name>GP Premium</name>
     <description>Api GP</description>
     <properties>
         <java.version>11</java.version>
 
         <!--    Descomentar para gerar war-->
-        <!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
-        <!--        <deploy.wildfly.port>9990</deploy.wildfly.port>-->
-        <!--        <deploy.wildfly.username>wildfly</deploy.wildfly.username>-->
-        <!--        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>-->
+        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>
+        <deploy.wildfly.port>9990</deploy.wildfly.port>
+        <deploy.wildfly.username>wildfly</deploy.wildfly.username>
+        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>
         <!--    Fim -->
 
     </properties>
     <dependencies>
 
         <!--    Descomentar para gerar war-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-tomcat</artifactId>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!--    Fim -->
 
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-rest-webmvc</artifactId>
@@ -47,12 +41,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework.boot</groupId>-->
+<!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -94,14 +88,30 @@
             <version>0.9.1</version>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
     </dependencies>
 
     <!--    Descomentar para gerar war-->
-    <!--    <packaging>war</packaging>-->
+    <packaging>war</packaging>
     <!--    Fim -->
 
     <build>
@@ -114,26 +124,26 @@
                 </configuration>
             </plugin>
             <!--    Descomentar para gerar war-->
-            <!--            <plugin>-->
-            <!--                <groupId>org.wildfly.plugins</groupId>-->
-            <!--                <artifactId>wildfly-maven-plugin</artifactId>-->
-            <!--                <version>2.0.2.Final</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <phase>install</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>deploy</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--                <configuration>-->
-            <!--                    <filename>${project.build.finalName}.war</filename>-->
-            <!--                    <hostname>${deploy.wildfly.host}</hostname>-->
-            <!--                    <port>${deploy.wildfly.port}</port>-->
-            <!--                    <username>${deploy.wildfly.username}</username>-->
-            <!--                    <password>${deploy.wildfly.password}</password>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>2.0.2.Final</version>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <filename>${project.build.finalName}.war</filename>
+                    <hostname>${deploy.wildfly.host}</hostname>
+                    <port>${deploy.wildfly.port}</port>
+                    <username>${deploy.wildfly.username}</username>
+                    <password>${deploy.wildfly.password}</password>
+                </configuration>
+            </plugin>
             <!--    Fim -->
 
             <plugin>
