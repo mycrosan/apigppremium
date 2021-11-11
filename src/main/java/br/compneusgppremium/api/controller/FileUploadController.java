@@ -24,11 +24,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class FileUploadController {
 
     @Autowired
     FilesStorageService storageService;
+    private HttpServletRequest request;
 
     @PostMapping("/api/upload")
     public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
@@ -46,10 +49,11 @@ public class FileUploadController {
                     fname += "." + ext;
 
                 try {
+                    String realPath = request.getServletContext().getRealPath("");
                     String filename = file.getOriginalFilename(); // Give a random filename here.
                     byte[] bytes = file.getBytes();
                     Path insPath = Path.of(Paths.get("uploads/credenciados").toString());
-                    String insPathN = "uploads//credenciados/" + fname;
+                    String insPathN = realPath + "uploads//credenciados/" + fname;
                     Files.write(Paths.get(insPathN), bytes);
                     fileNames.add(fname);
                 } catch (IOException e) {

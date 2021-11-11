@@ -7,23 +7,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
 
-  private final Path root = Paths.get("uploads/credenciados");
+  private final Path root = Paths.get("../standalone/deployments/uploads");
+  private final Path root_cred = Paths.get("../standalone/deployments/uploads/credenciados");
 
   @Override
   public void init() {
     try {
-      Files.createDirectory(root);
+      if(!Files.exists(root)) {
+        Files.createDirectory(root);
+      }
+      if(!Files.exists(root_cred)) {
+        Files.createDirectory(root_cred);
+      }
     } catch (IOException e) {
-      throw new RuntimeException("Could not initialize folder for upload!");
+      throw new RuntimeException("Could not initialize folder for upload! ");
     }
   }
 

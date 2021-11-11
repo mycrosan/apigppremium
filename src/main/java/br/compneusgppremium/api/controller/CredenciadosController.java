@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,8 @@ public class CredenciadosController {
 
     @Autowired
     private CredenciadosRepository repository;
+
+    private HttpServletRequest request;
 
     @GetMapping(path = "/api/credenciados")
     public List<CredenciadosModel> findAll() {
@@ -57,8 +60,7 @@ public class CredenciadosController {
                 try {
                     String filename = file.getOriginalFilename(); // Give a random filename here.
                     byte[] bytes = file.getBytes();
-                    Path insPath = Path.of(Paths.get("uploads/credenciados").toString());
-                    String insPathN = "uploads//credenciados/" + fname;
+                    String insPathN = "../standalone/deployments/uploads/credenciados/" + fname;
                     Files.write(Paths.get(insPathN), bytes);
                     fileNames.add(fname);
                 } catch (IOException e) {
