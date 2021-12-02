@@ -60,6 +60,7 @@ public class CredenciadosController {
                 try {
                     String filename = file.getOriginalFilename(); // Give a random filename here.
                     byte[] bytes = file.getBytes();
+                    //                     String insPathN = "/opt/wildfly/standalone/deployments/uploads/credenciados/" + fname;
                     String insPathN = "../standalone/deployments/uploads/credenciados/" + fname;
                     Files.write(Paths.get(insPathN), bytes);
                     fileNames.add(fname);
