@@ -21,38 +21,23 @@ import javax.servlet.ServletOutputStream;
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
 
-  private final Path root_p = Paths.get("/opt/wildfly/standalone/deployments/uploads");
-  private final Path root_cred_p = Paths.get("/opt/wildfly/standalone/deployments/uploads/credenciados");
+    private final Path root_p = Paths.get("/opt/wildfly/standalone/deployments/uploads");
+    private final Path root_cred_p = Paths.get("/opt/wildfly/standalone/deployments/uploads/credenciados");
 
-    private final Path root = Paths.get("../standalone/deployments/uploads");
-    private final Path root_cred = Paths.get("../standalone/deployments/uploads/credenciados");
+    private final Path root = Paths.get("uploads");
+    private final Path root_cred = Paths.get("uploads/credenciados");
 
     @Override
     public void init() {
-        String filePath = new File("").getAbsolutePath();
+        System.out.println("Inicializando" + root + root_cred);
+        String filePath = new File("").getPath();
         System.out.println("pasta" + filePath);
         if (filePath == "/") {
-            try {
-                if (!Files.exists(root_p)) {
-                    Files.createDirectory(root_cred_p);
-                }
-                if (!Files.exists(root_cred)) {
-                    Files.createDirectory(root_cred);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Could not initialize folder for upload! " + filePath);
-            }
+            this.createDir(root_p);
+            this.createDir(root_cred_p);
         } else {
-            try {
-                if (!Files.exists(root)) {
-                    Files.createDirectory(root);
-                }
-                if (!Files.exists(root_cred)) {
-                    Files.createDirectory(root_cred);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Could not initialize folder for upload! " + filePath);
-            }
+            this.createDir(root);
+            this.createDir(root_cred);
         }
     }
 
@@ -92,6 +77,16 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
         } catch (IOException e) {
             throw new RuntimeException("Could not load the files!");
+        }
+    }
+
+    private void createDir(Path path_place) {
+        try {
+            if (!Files.exists(path_place)) {
+                Files.createDirectory(path_place);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Problema ao criar a pasta upload! " + path_place);
         }
     }
 
