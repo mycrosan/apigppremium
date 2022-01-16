@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import br.compneusgppremium.api.message.ResponseMessage;
 import br.compneusgppremium.api.service.FilesStorageService;
+import br.compneusgppremium.api.util.ApiError;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -34,7 +35,7 @@ public class FileUploadController {
     private HttpServletRequest request;
 
     @PostMapping("/api/upload")
-    public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    public Object uploadFiles(@RequestParam("files") MultipartFile[] files) {
         String message = "";
 
         try {
@@ -49,11 +50,11 @@ public class FileUploadController {
                     fname += "." + ext;
 
                 try {
-                    String realPath = request.getServletContext().getRealPath("");
+//                    String realPath = request.getServletContext().getRealPath("");
                     String filename = file.getOriginalFilename(); // Give a random filename here.
                     byte[] bytes = file.getBytes();
-                    Path insPath = Path.of(Paths.get("uploads/credenciados").toString());
-                    String insPathN = realPath + "uploads//credenciados/" + fname;
+//                    Path insPath = Path.of(Paths.get("C:\\Users\\Servo\\Documents\\www\\gppremium\\uploads\\").toString());
+                    String insPathN = "C:\\Users\\Servo\\Documents\\www\\gppremium\\uploads\\" + fname;
                     Files.write(Paths.get(insPathN), bytes);
                     fileNames.add(fname);
                 } catch (IOException e) {
@@ -61,11 +62,19 @@ public class FileUploadController {
                 }
             });
 
-            message = "Uploaded the files successfully: " + fileNames;
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            message = "Uploaded the files successfully: ";
+
+
+//            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, message , null,"Erro");
+//            return apiError;
+
+            var response = ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message, fileNames));
+            System.out.println(response);
+            return response;
+
         } catch (Exception e) {
             message = "Falha ao fazer o upload do arquivo!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message, null));
         }
     }
 

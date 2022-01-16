@@ -15,7 +15,7 @@
     <description>Api GP</description>
     <properties>
         <java.version>11</java.version>
-
+<!-- mvn clean package -->
         <!--    Descomentar para gerar war-->
 <!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
 <!--        <deploy.wildfly.port>9990</deploy.wildfly.port>-->

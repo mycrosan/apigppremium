@@ -54,7 +54,7 @@ public class CarcacaController {
     }
 
     @PostMapping(path = "/api/carcaca")
-    public Object salvar(@RequestBody CarcacaModel carcaca, @RequestParam("file") MultipartFile arquivo) {
+    public Object salvar(@RequestBody CarcacaModel carcaca) {
         try {
             carcaca.setStatus("start");
             return repository.save(carcaca);
