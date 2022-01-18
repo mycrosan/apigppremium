@@ -1,4 +1,5 @@
 package br.compneusgppremium.api.controller;
+
 import br.compneusgppremium.api.controller.model.CarcacaModel;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.util.ApiError;
@@ -6,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +23,7 @@ import java.io.IOException;
 public class CarcacaController {
 
     // caminho da imagem
-    private static String caminhoImagnes = "E:\\imagens";
+    private static String caminhoImagem = "C:\\Users\\Servo\\Documents\\imagens\\";
 
     @Autowired
     private CarcacaRepository repository;
@@ -69,10 +73,10 @@ public class CarcacaController {
     public Object delete(@PathVariable("id") Integer id) {
         try {
             return repository.findById(id)
-                .map(record -> {
-                    repository.deleteById(id);
-                    return ResponseEntity.ok().build();
-                }).orElse(ResponseEntity.notFound().build());
+                    .map(record -> {
+                        repository.deleteById(id);
+                        return ResponseEntity.ok().build();
+                    }).orElse(ResponseEntity.notFound().build());
         } catch (Exception ex) {
             System.out.println(ex);
             ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Não foi possível excluir a carçaca " + id, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
@@ -81,12 +85,12 @@ public class CarcacaController {
     }
 
     //public class ImagemController {
-      //  @Autowired
-        //CarcacaModel imagemModel;
-        //@PostMapping(path = "/api/carcaca")
-        //public void uploadFile(@RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
-          //  imagemModel.uploadFile(file);
-       // }
+    //  @Autowired
+    //CarcacaModel imagemModel;
+    //@PostMapping(path = "/api/carcaca")
+    //public void uploadFile(@RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
+    //  imagemModel.uploadFile(file);
+    // }
     //}
 
 
@@ -96,7 +100,7 @@ public class CarcacaController {
             var retornoConsulta = repository.findByEtiqueta(etiqueta);
             if (retornoConsulta.size() > 1) {
                 throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
-            }else if (retornoConsulta.size() == 1) {
+            } else if (retornoConsulta.size() == 1) {
                 return retornoConsulta.get(0);
             }
             throw new RuntimeException("Carcaça etiqueta " + etiqueta + " não cadastrada");
@@ -104,5 +108,16 @@ public class CarcacaController {
             ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
+    }
+
+    @GetMapping(path = "/api/carcaca/image/{idImg}")
+    @ResponseBody
+    public byte[] exibirImagem(@PathVariable("idImg") String idImg) throws IOException {
+       File imagemArquivo = new File(caminhoImagem + idImg);
+       if(idImg != null || idImg.trim().length() > 0 ){
+           System.out.println("No if");
+           return Files.readAllBytes(imagemArquivo.toPath());
+       }
+       return null;
     }
 }

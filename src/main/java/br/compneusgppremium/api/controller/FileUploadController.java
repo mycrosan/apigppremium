@@ -54,7 +54,7 @@ public class FileUploadController {
                     String filename = file.getOriginalFilename(); // Give a random filename here.
                     byte[] bytes = file.getBytes();
 //                    Path insPath = Path.of(Paths.get("C:\\Users\\Servo\\Documents\\www\\gppremium\\uploads\\").toString());
-                    String insPathN = "C:\\Users\\Servo\\Documents\\www\\gppremium\\uploads\\" + fname;
+                    String insPathN = "C:\\Users\\Servo\\Documents\\imagens\\" + fname;
                     Files.write(Paths.get(insPathN), bytes);
                     fileNames.add(fname);
                 } catch (IOException e) {

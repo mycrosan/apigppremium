@@ -50,8 +50,8 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/status").permitAll()
                 .antMatchers("/api/credenciados").permitAll()
                 .antMatchers("/api/upload").permitAll()
-                .antMatchers(HttpMethod.GET, "/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/**").permitAll()
 //                .antMatchers(HttpMethod.POST, "/api/*").permitAll();
                 .anyRequest().authenticated()
                 .and().csrf().disable()
