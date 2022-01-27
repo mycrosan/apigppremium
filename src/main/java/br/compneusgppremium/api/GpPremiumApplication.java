@@ -21,10 +21,10 @@ public class GpPremiumApplication extends SpringBootServletInitializer {
 		SpringApplication.run(GpPremiumApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner init(FilesStorageService filesStorageService) {
-		return (args) -> {
-			filesStorageService.init();
-		};
-	}
+//	@Bean
+//	CommandLineRunner init(FilesStorageService filesStorageService) {
+//		return (args) -> {
+//			filesStorageService.init();
+//		};
+//	}
 }

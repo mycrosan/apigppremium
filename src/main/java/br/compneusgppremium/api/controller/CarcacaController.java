@@ -23,7 +23,7 @@ import java.io.IOException;
 public class CarcacaController {
 
     // caminho da imagem
-    private static String caminhoImagem = "C:\\Users\\Servo\\Documents\\imagens\\";
+    private static String caminhoImagem = "/home/sandy/imagens/carcaca/";
 
     @Autowired
     private CarcacaRepository repository;
