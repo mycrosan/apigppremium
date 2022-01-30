@@ -3,6 +3,7 @@ package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.CarcacaModel;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.util.ApiError;
+import br.compneusgppremium.api.util.OperationSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ import java.io.IOException;
 public class CarcacaController {
 
     // caminho da imagem
-    private static String caminhoImagem = "/home/sandy/imagens/carcaca/";
+    private static String caminhoImagem = new OperationSystem().placeImageSystem();
 
     @Autowired
     private CarcacaRepository repository;

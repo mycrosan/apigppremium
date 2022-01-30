@@ -12,6 +12,7 @@ import java.util.UUID;
 import br.compneusgppremium.api.message.ResponseMessage;
 import br.compneusgppremium.api.service.FilesStorageService;
 import br.compneusgppremium.api.util.ApiError;
+import br.compneusgppremium.api.util.OperationSystem;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -33,6 +34,8 @@ public class FileUploadController {
     @Autowired
     FilesStorageService storageService;
     private HttpServletRequest request;
+    private static String caminhoImagem = new OperationSystem().placeImageSystem();
+
 
     @PostMapping("/api/upload")
     public Object uploadFiles(@RequestParam("files") MultipartFile[] files) {
@@ -54,7 +57,7 @@ public class FileUploadController {
                     String filename = file.getOriginalFilename(); // Give a random filename here.
                     byte[] bytes = file.getBytes();
 //                    Path insPath = Path.of(Paths.get("C:\\Users\\Servo\\Documents\\www\\gppremium\\uploads\\").toString());
-                    String insPathN = "/home/sandy/imagens/carcaca/" + fname;
+                    String insPathN = caminhoImagem + fname;
                     Files.write(Paths.get(insPathN), bytes);
                     fileNames.add(fname);
                 } catch (IOException e) {
