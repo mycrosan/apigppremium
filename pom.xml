@@ -17,21 +17,21 @@
         <java.version>11</java.version>
 <!-- mvn clean package -->
         <!--    Descomentar para gerar war-->
-        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>
-        <deploy.wildfly.port>9990</deploy.wildfly.port>
-        <deploy.wildfly.username>wildfly</deploy.wildfly.username>
-        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>
+<!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
+<!--        <deploy.wildfly.port>9990</deploy.wildfly.port>-->
+<!--        <deploy.wildfly.username>wildfly</deploy.wildfly.username>-->
+<!--        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>-->
         <!--    Fim -->
 
     </properties>
     <dependencies>
 
         <!--    Descomentar para gerar war-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-tomcat</artifactId>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <!--    Fim -->
 
         <dependency>
@@ -41,12 +41,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -111,7 +111,7 @@
     </dependencies>
 
     <!--    Descomentar para gerar war-->
-    <packaging>war</packaging>
+<!--    <packaging>war</packaging>-->
     <!--    Fim -->
 
     <build>
@@ -124,26 +124,26 @@
                 </configuration>
             </plugin>
             <!--    Descomentar para gerar war-->
-            <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <version>2.0.2.Final</version>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <filename>${project.build.finalName}.war</filename>
-                    <hostname>${deploy.wildfly.host}</hostname>
-                    <port>${deploy.wildfly.port}</port>
-                    <username>${deploy.wildfly.username}</username>
-                    <password>${deploy.wildfly.password}</password>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.wildfly.plugins</groupId>-->
+<!--                <artifactId>wildfly-maven-plugin</artifactId>-->
+<!--                <version>2.0.2.Final</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>install</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>deploy</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <filename>${project.build.finalName}.war</filename>-->
+<!--                    <hostname>${deploy.wildfly.host}</hostname>-->
+<!--                    <port>${deploy.wildfly.port}</port>-->
+<!--                    <username>${deploy.wildfly.username}</username>-->
+<!--                    <password>${deploy.wildfly.password}</password>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <!--    Fim -->
 
             <plugin>
