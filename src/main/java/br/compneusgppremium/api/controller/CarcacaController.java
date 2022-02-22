@@ -24,7 +24,7 @@ import java.io.IOException;
 public class CarcacaController {
 
     // caminho da imagem
-    private static String caminhoImagem = new OperationSystem().placeImageSystem("carcaca");
+//    private static String caminhoImagem = new OperationSystem().placeImageSystem("carcaca");
 
     @Autowired
     private CarcacaRepository repository;
@@ -101,9 +101,10 @@ public class CarcacaController {
         }
     }
 
-    @GetMapping(path = "/api/carcaca/image/{idImg}")
+    @GetMapping(path = "/api/image/{caminho}/{idImg}")
     @ResponseBody
-    public byte[] exibirImagem(@PathVariable("idImg") String idImg) throws IOException {
+    public byte[] exibirImagem(@PathVariable("caminho") String caminho, @PathVariable("idImg") String idImg) throws IOException {
+        String caminhoImagem = new OperationSystem().placeImageSystem(caminho);
        File imagemArquivo = new File(caminhoImagem + idImg);
        if(idImg != null || idImg.trim().length() > 0 ){
            System.out.println("No if");
