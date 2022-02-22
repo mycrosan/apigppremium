@@ -7,15 +7,15 @@ public class OperationSystem {
         return os;
     }
 
-    public String placeImageSystem() {
+    public String placeImageSystem(String place) {
         var os = this.getOperatingSystem();
         String caminho;
         if("Mac OS X".equals(os)){
-             caminho = "/Users/sandy/Pictures/carcaca/";
+             caminho = "/Users/sandy/Pictures/" + place + "/";
         }else if ("Windows".equals(os)){
              caminho = "C://";
         }else {
-             caminho = "/home/sandy/imagens/carcaca/";
+             caminho = "/home/sandy/imagens/" + place + "/";
         }
         return caminho;
     }

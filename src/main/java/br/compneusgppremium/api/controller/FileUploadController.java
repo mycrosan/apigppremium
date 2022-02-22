@@ -34,12 +34,13 @@ public class FileUploadController {
     @Autowired
     FilesStorageService storageService;
     private HttpServletRequest request;
-    private static String caminhoImagem = new OperationSystem().placeImageSystem();
+//    private static String caminhoImagem = new OperationSystem().placeImageSystem();
 
 
     @PostMapping("/api/upload")
-    public Object uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    public Object uploadFiles(@RequestParam("title") String title, @RequestParam("files") MultipartFile[] files) {
         String message = "";
+        String caminhoImagem = new OperationSystem().placeImageSystem(title);
 
         try {
             List<String> fileNames = new ArrayList<>();

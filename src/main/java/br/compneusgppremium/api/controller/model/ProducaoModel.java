@@ -20,4 +20,7 @@ public class ProducaoModel {
     public String dados;
     @ManyToOne
     private RegraModel regra;
+    @Column
+    @Convert(converter = JpaConverterJson.class)
+    public String fotos;
 }

@@ -24,7 +24,7 @@ import java.io.IOException;
 public class CarcacaController {
 
     // caminho da imagem
-    private static String caminhoImagem = new OperationSystem().placeImageSystem();
+    private static String caminhoImagem = new OperationSystem().placeImageSystem("carcaca");
 
     @Autowired
     private CarcacaRepository repository;
@@ -85,22 +85,12 @@ public class CarcacaController {
         }
     }
 
-    //public class ImagemController {
-    //  @Autowired
-    //CarcacaModel imagemModel;
-    //@PostMapping(path = "/api/carcaca")
-    //public void uploadFile(@RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
-    //  imagemModel.uploadFile(file);
-    // }
-    //}
-
-
     @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
     public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
         try {
             var retornoConsulta = repository.findByEtiqueta(etiqueta);
             if (retornoConsulta.size() > 1) {
-                throw new RuntimeException("O sistema encontrou mais de uma regra para os parâmetros enviados, revise as regras cadastradas");
+                throw new RuntimeException("O sistema encontrou mais de uma carcaca com a mesma etiqueta");
             } else if (retornoConsulta.size() == 1) {
                 return retornoConsulta.get(0);
             }
