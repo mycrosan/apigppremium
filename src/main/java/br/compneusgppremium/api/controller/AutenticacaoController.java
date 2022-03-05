@@ -6,6 +6,7 @@ import br.compneusgppremium.api.service.TokenService;
 import br.compneusgppremium.api.controller.dto.TokenDto;
 import br.compneusgppremium.api.controller.form.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +37,7 @@ public class AutenticacaoController {
 			return ResponseEntity.ok(new TokenDto(token, "Bearer", true));
 		} catch (AuthenticationException e) {
 			System.out.println(e);
-			return ResponseEntity.ok(new RespostaDto("Usuário ou senha incorretos", e.getMessage()));
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Verifique seu usuário e senha");
 		}
 	}
 	
