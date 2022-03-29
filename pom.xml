@@ -8,12 +8,15 @@
         <version>2.4.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>br.compneusgppremium</groupId>
     <artifactId>gp-premium</artifactId>
     <version>0.0.11-SNAPSHOT</version>
     <name>GP Premium</name>
     <description>Api GP</description>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
 <!-- mvn clean package -->
         <!--    Descomentar para gerar war-->
@@ -22,7 +25,6 @@
 <!--        <deploy.wildfly.username>wildfly</deploy.wildfly.username>-->
 <!--        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>-->
         <!--    Fim -->
-
     </properties>
     <dependencies>
 
@@ -108,6 +110,24 @@
             <artifactId>logback-core</artifactId>
             <version>1.2.3</version>
         </dependency>
+
+        <!-- Flyway -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <!--    Descomentar para gerar war-->
@@ -161,6 +181,32 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.flywaydb</groupId>-->
+<!--                <artifactId>flyway-maven-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>migrate</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <driver>com.mysql.cj.jdbc.Driver</driver>-->
+<!--                    <url>jdbc:mysql://192.168.0.106:3306/gppremium?useTimezone=true</url>-->
+<!--                    <user>monty</user>-->
+<!--                    <password>some_pass</password>-->
+<!--                    <baselineOnMigrate>true</baselineOnMigrate>-->
+<!--                    <schemas>public</schemas>-->
+<!--                    <locations>-->
+<!--                        <location>-->
+<!--                            filesystem:src/main/resources/db/migration-->
+<!--                        </location>-->
+<!--                    </locations>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
