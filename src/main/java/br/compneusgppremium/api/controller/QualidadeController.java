@@ -97,15 +97,15 @@ public class QualidadeController {
 //        }
 //    }
 
-    @GetMapping(path = "/api/image/{caminho}/{idImg}")
-    @ResponseBody
-    public byte[] exibirImagem(@PathVariable("caminho") String caminho, @PathVariable("idImg") String idImg) throws IOException {
-        String caminhoImagem = new OperationSystem().placeImageSystem(caminho);
-       File imagemArquivo = new File(caminhoImagem + idImg);
-       if(idImg != null || idImg.trim().length() > 0 ){
-           System.out.println("No if");
-           return Files.readAllBytes(imagemArquivo.toPath());
-       }
-       return null;
-    }
+//    @GetMapping(path = "/api/image/{caminho}/{idImg}")
+//    @ResponseBody
+//    public byte[] exibirImagem(@PathVariable("caminho") String caminho, @PathVariable("idImg") String idImg) throws IOException {
+//        String caminhoImagem = new OperationSystem().placeImageSystem(caminho);
+//       File imagemArquivo = new File(caminhoImagem + idImg);
+//       if(idImg != null || idImg.trim().length() > 0 ){
+//           System.out.println("No if");
+//           return Files.readAllBytes(imagemArquivo.toPath());
+//       }
+//       return null;
+//    }
 }
