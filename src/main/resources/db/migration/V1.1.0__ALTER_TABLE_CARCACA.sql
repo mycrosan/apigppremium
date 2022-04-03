@@ -1,0 +1,30 @@
+-- MySQL Workbench Synchronization
+-- Generated: 2022-04-03 12:59
+-- Model: New Model
+-- Version: 1.0
+-- Project: Name of the project
+-- Author: Sandy
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+ALTER TABLE `gppremium`.`carcaca`
+ADD COLUMN `uuid` BINARY(16) NOT NULL AFTER `dt_delete`;
+
+ALTER TABLE `gppremium`.`carcaca`
+CHANGE COLUMN `uuid` `uuid` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())) ;
+
+ALTER TABLE `gppremium`.`carcaca`
+DROP FOREIGN KEY `fk_carcaca_status_carcaca1`;
+
+ALTER TABLE `gppremium`.`carcaca` ADD CONSTRAINT `fk_carcaca_status_carcaca1`
+  FOREIGN KEY (`status_carcaca_id`)
+  REFERENCES `gppremium`.`status_carcaca` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
