@@ -1,6 +1,9 @@
 package br.compneusgppremium.api.controller;
 
+import br.compneusgppremium.api.controller.model.CarcacaModel;
+import br.compneusgppremium.api.controller.model.ProducaoModel;
 import br.compneusgppremium.api.controller.model.QualidadeModel;
+import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.QualidadeRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.OperationSystem;
@@ -23,11 +26,14 @@ public class QualidadeController {
 //    private static String caminhoImagem = new OperationSystem().placeImageSystem("qualidade");
 
     @Autowired
-    private QualidadeRepository repository;
+    private QualidadeRepository qualidadeRepository;
+
+    @Autowired
+    private CarcacaRepository carcacaRepository;
 
     @GetMapping(path = "/api/qualidade")
     public List<QualidadeModel> findAll() {
-        var it = repository.findAll();
+        var it = qualidadeRepository.findAll();
         var qualidades = new ArrayList<QualidadeModel>();
         it.forEach(e -> qualidades.add(e));
         return qualidades;
@@ -35,77 +41,51 @@ public class QualidadeController {
 
     @GetMapping(path = "/api/qualidade/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
-        return repository.findById(id)
+        return qualidadeRepository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-//    @PutMapping(path = "/api/qualidade/{id}")
-//    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody QualidadeModel qualidade) {
-//        return repository.findById(id)
-//                .map(record -> {
-//                    record.setNumero_etiqueta(qualidade.getNumero_etiqueta());
-//                    record.setDot(qualidade.getDot());
-//                    record.setModelo(qualidade.getModelo());
-//                    record.setMedida(qualidade.getMedida());
-//                    record.setPais(qualidade.getPais());
-//                    QualidadeModel updated = repository.save(record);
-//                    return ResponseEntity.ok().body(updated);
-//                }).orElse(ResponseEntity.notFound().build());
-//    }
+    @PutMapping(path = "/api/qualidade/{id}")
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody QualidadeModel qualidade) {
+        return qualidadeRepository.findById(id)
+                .map(record -> {
+                    record.setProducao(qualidade.getProducao());
+                    record.setObservacao(qualidade.getObservacao());
+                    record.setTipo_classificacao(qualidade.getTipo_classificacao());
+                    record.setTipo_observacao(qualidade.getTipo_observacao());
+                    QualidadeModel updated = qualidadeRepository.save(record);
+                    return ResponseEntity.ok().body(updated);
+                }).orElse(ResponseEntity.notFound().build());
+    }
 
-//    @PostMapping(path = "/api/qualidade")
-//    public Object salvar(@RequestBody QualidadeModel qualidade) {
-//        try {
-//            qualidade.setStatus("start");
-//            return repository.save(qualidade);
-//        } catch (Exception e) {
-//            return e;
-//        }
-//
-//    }
+    @PostMapping(path = "/api/qualidade")
+    public Object salvar(@RequestBody QualidadeModel qualidade) {
+        try {
+            return carcacaRepository.findById(qualidade.getProducao().getCarcaca().getId())
+                    .map(record -> {
+                        record.setStatus("approved");
+                        CarcacaModel updated = carcacaRepository.save(record);
+                        return qualidadeRepository.save(qualidade);
+                    });
+        } catch (Exception ex) {
+            return ex;
+        }
+    }
 
 
     @DeleteMapping(path = "/api/qualidade/{id}")
     public Object delete(@PathVariable("id") Integer id) {
         try {
-            return repository.findById(id)
+            return qualidadeRepository.findById(id)
                     .map(record -> {
-                        repository.deleteById(id);
+                        qualidadeRepository.deleteById(id);
                         return ResponseEntity.ok().build();
                     }).orElse(ResponseEntity.notFound().build());
         } catch (Exception ex) {
             System.out.println(ex);
-            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Não foi possível excluir a carçaca " + id, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+            ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Não foi possível excluir!" + id, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
     }
-
-//    @GetMapping(path = "/api/qualidade/pesquisa/{etiqueta}")
-//    public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
-//        try {
-//            var retornoConsulta = repository.findByEtiqueta(etiqueta);
-//            if (retornoConsulta.size() > 1) {
-//                throw new RuntimeException("O sistema encontrou mais de uma qualidade com a mesma etiqueta");
-//            } else if (retornoConsulta.size() == 1) {
-//                return retornoConsulta.get(0);
-//            }
-//            throw new RuntimeException("Carcaça etiqueta " + etiqueta + " não cadastrada");
-//        } catch (Exception ex) {
-//            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
-//            return apiError;
-//        }
-//    }
-
-//    @GetMapping(path = "/api/image/{caminho}/{idImg}")
-//    @ResponseBody
-//    public byte[] exibirImagem(@PathVariable("caminho") String caminho, @PathVariable("idImg") String idImg) throws IOException {
-//        String caminhoImagem = new OperationSystem().placeImageSystem(caminho);
-//       File imagemArquivo = new File(caminhoImagem + idImg);
-//       if(idImg != null || idImg.trim().length() > 0 ){
-//           System.out.println("No if");
-//           return Files.readAllBytes(imagemArquivo.toPath());
-//       }
-//       return null;
-//    }
 }
