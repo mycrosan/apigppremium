@@ -32,4 +32,6 @@ public class CarcacaModel {
     @Column
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
+    @ManyToOne
+    public StatusCarcacaModel status_carcaca;
 }

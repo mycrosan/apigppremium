@@ -62,6 +62,7 @@ public class CarcacaController {
     public Object salvar(@RequestBody CarcacaModel carcaca) {
         try {
             carcaca.setStatus("start");
+            carcaca.setStatus_carcaca(carcaca.getStatus_carcaca());
             return repository.save(carcaca);
         } catch (Exception e) {
             return e;
