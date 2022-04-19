@@ -6,10 +6,12 @@ import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -76,5 +78,24 @@ public class ProducaoController {
                     producaoRepository.deleteById(id);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(path = "/api/producao/pesquisa")
+    public Object consultarParametros(@RequestParam Map<Integer, String> parametros) {
+
+        int medida = Integer.parseInt(parametros.get("medida"));
+System.out.println(medida);
+        try {
+            var retornoConsulta = producaoRepository.findByParam(medida);
+            if (retornoConsulta.size() > 1) {
+                throw new RuntimeException("O sistema encontrou mais de uma carcaca com a mesma etiqueta");
+            } else if (retornoConsulta.size() == 1) {
+                return retornoConsulta.get(0);
+            }
+            throw new RuntimeException("Produção " + parametros + " não cadastrada");
+        } catch (Exception ex) {
+//            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para" + parametros, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+            return ex;
+        }
     }
 }
