@@ -11,8 +11,8 @@ import java.util.Map;
 
 @RepositoryRestResource(collectionResourceRel = "producao", path = "producao")
 public interface ProducaoRepository extends CrudRepository<ProducaoModel, Integer> {
-
-    @Query("from producao p where p.id = :medidaId")
+//@Query("select u.userName from User u inner join u.area ar where ar.idArea = :idArea")
+    @Query("from producao p inner join p.carcaca c where c.medida = 1")
     public List<Object> findByParam(@Param("medidaId") Integer medida);
 
 }
