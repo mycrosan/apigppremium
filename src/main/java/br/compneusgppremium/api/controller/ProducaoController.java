@@ -1,14 +1,15 @@
 package br.compneusgppremium.api.controller;
 
-import br.compneusgppremium.api.controller.model.CarcacaModel;
-import br.compneusgppremium.api.controller.model.ProducaoModel;
+import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,10 @@ public class ProducaoController {
     private ProducaoRepository producaoRepository;
     @Autowired
     private CarcacaRepository carcacaRepository;
+
+    @PersistenceContext
+    EntityManager entityManager;
+
 
     @GetMapping(path = "/api/producao")
     public List<ProducaoModel> findAll() {
@@ -81,21 +86,35 @@ public class ProducaoController {
     }
 
     @GetMapping(path = "/api/producao/pesquisa")
-    public Object consultarParametros(@RequestParam Map<Integer, String> parametros) {
+//    public Object consultarProducao(@RequestParam("medida") Integer medidaId, @RequestParam("marca") MarcaModel marca, @RequestParam("modelo") ModeloModel modelo, @RequestParam("pais") PaisModel pais) {
+    public Object consultarProducao(@RequestParam Map<Integer, String> params) {
 
-        int medida = Integer.parseInt(parametros.get("medida"));
-System.out.println(medida);
         try {
-            var retornoConsulta = producaoRepository.findByParam(medida);
-            if (retornoConsulta.size() > 1) {
-                throw new RuntimeException("O sistema encontrou mais de uma carcaca com a mesma etiqueta");
-            } else if (retornoConsulta.size() == 1) {
-                return retornoConsulta.get(0);
-            }
-            throw new RuntimeException("Produção " + parametros + " não cadastrada");
-        } catch (Exception ex) {
-//            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para" + parametros, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
-            return ex;
+            System.out.println(ProducaoModel.class);
+            Query consulta = entityManager.createQuery( "SELECT p FROM producao p");
+            return consulta.getSingleResult();
+        } catch (Exception e) {
+            return e;
         }
+
+//        try {
+//
+//            Integer medidaId = Integer.parseInt(params.get("medidaId"));
+//            Integer marcaId = Integer.parseInt(params.get("marcaId"));
+//            Integer modeloId = Integer.parseInt(params.get("modeloId"));
+//            Integer paisId = Integer.parseInt(params.get("paisId"));
+//
+//            var retornoConsulta = producaoRepository.findByParam(medidaId, marcaId, modeloId, paisId);
+//
+//            if (retornoConsulta.size() > 1) {
+//                throw new RuntimeException("O sistema encontrou mais de uma carcaca com a mesma etiqueta");
+//            } else if (retornoConsulta.size() == 1) {
+//                return retornoConsulta.get(0);
+//            }
+//            throw new RuntimeException("Produção não cadastrada");
+//        } catch (Exception ex) {
+////            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para" + parametros, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+//            return ex;
+//        }
     }
 }
