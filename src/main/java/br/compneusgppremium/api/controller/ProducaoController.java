@@ -86,13 +86,26 @@ public class ProducaoController {
     }
 
     @GetMapping(path = "/api/producao/pesquisa")
-//    public Object consultarProducao(@RequestParam("medida") Integer medidaId, @RequestParam("marca") MarcaModel marca, @RequestParam("modelo") ModeloModel modelo, @RequestParam("pais") PaisModel pais) {
     public Object consultarProducao(@RequestParam Map<Integer, String> params) {
+// Iniciando a consulta
+        var sql = "SELECT p FROM producao p where 1 = 1";
+// Montando a consulta
+        String medidaId = params.get("medidaId") != "" ? params.get("medidaId") : null;
+        if (medidaId != null)
+            sql = sql + " and p.carcaca.medida.id = " + medidaId;
+        String marcaId = params.get("marcaId") != "" ? params.get("marcaId") : null;
+        if (marcaId != null)
+            sql = sql + " and p.carcaca.modelo.marca.id = " + marcaId;
+        String modeloId = params.get("modeloId") != "" ? params.get("modeloId") : null;
+        if (modeloId != null)
+            sql = sql + " and p.carcaca.modelo.id = " + modeloId;
+        String paisId = params.get("paisId") != "" ? params.get("paisId") : null;
+        if (paisId != null)
+            sql = sql + " and p.carcaca.pais.id = " + paisId;
 
         try {
-            System.out.println(ProducaoModel.class);
-            Query consulta = entityManager.createQuery( "SELECT p FROM producao p");
-            return consulta.getSingleResult();
+            Query consulta = entityManager.createQuery(sql);
+            return consulta.getResultList();
         } catch (Exception e) {
             return e;
         }
