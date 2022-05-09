@@ -4,6 +4,8 @@ import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,15 +28,16 @@ public class ProducaoController {
     @PersistenceContext
     EntityManager entityManager;
 
-
     @GetMapping(path = "/api/producao")
-    public List<ProducaoModel> findAll() {
-        var it = producaoRepository.findAll();
-        var values = new ArrayList<ProducaoModel>();
-        it.forEach(e -> values.add(e));
-        return values;
+    public Object findAll() {
+        var sql = "SELECT p FROM producao p ORDER BY p.dt_create DESC";
+        try {
+            Query consulta = entityManager.createQuery(sql);
+            return consulta.setMaxResults(50).getResultList();
+        } catch (Exception e) {
+            return e;
+        }
     }
-
 
     @GetMapping(path = "/api/producao/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
@@ -90,44 +93,31 @@ public class ProducaoController {
 // Iniciando a consulta
         var sql = "SELECT p FROM producao p where 1 = 1";
 // Montando a consulta
-        String medidaId = params.get("medidaId") != "" ? params.get("medidaId") : null;
-        if (medidaId != null)
-            sql = sql + " and p.carcaca.medida.id = " + medidaId;
-        String marcaId = params.get("marcaId") != "" ? params.get("marcaId") : null;
-        if (marcaId != null)
-            sql = sql + " and p.carcaca.modelo.marca.id = " + marcaId;
+
         String modeloId = params.get("modeloId") != "" ? params.get("modeloId") : null;
         if (modeloId != null)
             sql = sql + " and p.carcaca.modelo.id = " + modeloId;
+
+        String marcaId = params.get("marcaId") != "" ? params.get("marcaId") : null;
+        if (marcaId != null)
+            sql = sql + " and p.carcaca.modelo.marca.id = " + marcaId;
+
+        String medidaId = params.get("medidaId") != "" ? params.get("medidaId") : null;
+        if (medidaId != null)
+            sql = sql + " and p.carcaca.medida.id = " + medidaId;
+
         String paisId = params.get("paisId") != "" ? params.get("paisId") : null;
         if (paisId != null)
             sql = sql + " and p.carcaca.pais.id = " + paisId;
 
+        sql = sql + " ORDER BY p.dt_create ASC";
+
         try {
             Query consulta = entityManager.createQuery(sql);
-            return consulta.getResultList();
+            return consulta.setMaxResults(50).getResultList();
         } catch (Exception e) {
             return e;
         }
 
-//        try {
-//
-//            Integer medidaId = Integer.parseInt(params.get("medidaId"));
-//            Integer marcaId = Integer.parseInt(params.get("marcaId"));
-//            Integer modeloId = Integer.parseInt(params.get("modeloId"));
-//            Integer paisId = Integer.parseInt(params.get("paisId"));
-//
-//            var retornoConsulta = producaoRepository.findByParam(medidaId, marcaId, modeloId, paisId);
-//
-//            if (retornoConsulta.size() > 1) {
-//                throw new RuntimeException("O sistema encontrou mais de uma carcaca com a mesma etiqueta");
-//            } else if (retornoConsulta.size() == 1) {
-//                return retornoConsulta.get(0);
-//            }
-//            throw new RuntimeException("Produção não cadastrada");
-//        } catch (Exception ex) {
-////            ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para" + parametros, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
-//            return ex;
-//        }
     }
 }

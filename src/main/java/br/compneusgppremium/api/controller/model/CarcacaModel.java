@@ -34,4 +34,8 @@ public class CarcacaModel {
     public String fotos;
     @ManyToOne
     public StatusCarcacaModel status_carcaca;
+    @Column
+    private String dt_create;
+    @Column
+    private String dt_update;
 }
