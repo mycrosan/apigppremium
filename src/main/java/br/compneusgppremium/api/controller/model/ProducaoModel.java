@@ -25,7 +25,7 @@ public class ProducaoModel {
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
     @Column
-    private String dt_create;
+    private Date dt_create;
     @Column
-    private String dt_update;
+    private Date dt_update;
 }

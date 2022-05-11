@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -48,11 +49,16 @@ public class ProducaoController {
 
     @PostMapping(path = "/api/producao")
     public Object salvar(@RequestBody ProducaoModel producao) {
+        var statusCarcaca = new StatusCarcacaModel();
+        statusCarcaca.setId(2);
         try {
             return carcacaRepository.findById(producao.getCarcaca().getId())
                     .map(record -> {
                         record.setStatus("in_production");
-                        CarcacaModel updated = carcacaRepository.save(record);
+                        record.setStatus_carcaca(statusCarcaca);
+                        carcacaRepository.save(record);
+                        producao.setDados(producao.toString());
+                        producao.setDt_create(new Date());
                         return producaoRepository.save(producao);
                     });
         } catch (Exception ex) {
@@ -66,7 +72,6 @@ public class ProducaoController {
                 .map(record -> {
                     record.setCarcaca(producao.getCarcaca());
                     record.setMedida_pneu_raspado(producao.getMedida_pneu_raspado());
-                    record.setDados(producao.getDados());
                     record.setRegra(producao.getRegra());
                     ProducaoModel updated = producaoRepository.save(record);
                     return ResponseEntity.ok().body(updated);

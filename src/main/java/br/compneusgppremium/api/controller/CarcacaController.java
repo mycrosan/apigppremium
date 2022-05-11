@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller;
 
 import br.compneusgppremium.api.controller.model.CarcacaModel;
+import br.compneusgppremium.api.controller.model.StatusCarcacaModel;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.OperationSystem;
@@ -12,12 +13,17 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.io.IOException;
+import java.util.UUID;
 
 
 @RestController
@@ -29,12 +35,18 @@ public class CarcacaController {
     @Autowired
     private CarcacaRepository repository;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
     @GetMapping(path = "/api/carcaca")
-    public List<CarcacaModel> findAll() {
-        var it = repository.findAll();
-        var carcacas = new ArrayList<CarcacaModel>();
-        it.forEach(e -> carcacas.add(e));
-        return carcacas;
+    public Object findAll() {
+        var sql = "SELECT c FROM carcaca c where c.status = 'start' or c.status_carcaca = 1 ORDER BY c.dt_create DESC";
+        try {
+            Query consulta = entityManager.createQuery(sql);
+            return consulta.setMaxResults(50).getResultList();
+        } catch (Exception e) {
+            return e;
+        }
     }
 
     @GetMapping(path = "/api/carcaca/{id}")
@@ -60,9 +72,18 @@ public class CarcacaController {
 
     @PostMapping(path = "/api/carcaca")
     public Object salvar(@RequestBody CarcacaModel carcaca) {
+        var statusCarcaca = new StatusCarcacaModel();
+        statusCarcaca.setId(1);
         try {
+            var retornoConsulta = repository.findByEtiquetaDuplicate(carcaca.getNumero_etiqueta());
+            if (retornoConsulta.size() > 0) {
+                throw new RuntimeException("Etiqueta duplicada, favor inserir uma etiqueta diferente");
+            }
             carcaca.setStatus("start");
-            carcaca.setStatus_carcaca(carcaca.getStatus_carcaca());
+            carcaca.setStatus_carcaca(statusCarcaca);
+            carcaca.setDados(carcaca.toString());
+            carcaca.setDt_create(new Date());
+            carcaca.setUuid(UUID.randomUUID());
             return repository.save(carcaca);
         } catch (Exception e) {
             return e;
@@ -106,11 +127,11 @@ public class CarcacaController {
     @ResponseBody
     public byte[] exibirImagem(@PathVariable("caminho") String caminho, @PathVariable("idImg") String idImg) throws IOException {
         String caminhoImagem = new OperationSystem().placeImageSystem(caminho);
-       File imagemArquivo = new File(caminhoImagem + idImg);
-       if(idImg != null || idImg.trim().length() > 0 ){
-           System.out.println("No if");
-           return Files.readAllBytes(imagemArquivo.toPath());
-       }
-       return null;
+        File imagemArquivo = new File(caminhoImagem + idImg);
+        if (idImg != null || idImg.trim().length() > 0) {
+            System.out.println("No if");
+            return Files.readAllBytes(imagemArquivo.toPath());
+        }
+        return null;
     }
 }
