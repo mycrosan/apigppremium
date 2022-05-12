@@ -22,4 +22,7 @@ public interface CarcacaRepository extends CrudRepository<CarcacaModel, Integer>
     @Query("from carcaca c where c.status='start'")
     public Iterable<CarcacaModel> findAll();
 
+    @Query("from carcaca c where c.numero_etiqueta=:numeroEtiqueta")
+    public List<Object> findByEtiquetaDuplicate(@Param("numeroEtiqueta") String numeroEtiqueta);
+
 }

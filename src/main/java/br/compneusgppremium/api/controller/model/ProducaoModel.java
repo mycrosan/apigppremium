@@ -4,6 +4,7 @@ import br.compneusgppremium.api.util.JpaConverterJson;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "producao")
 @Data
@@ -23,4 +24,8 @@ public class ProducaoModel {
     @Column
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
+    @Column
+    private Date dt_create;
+    @Column
+    private Date dt_update;
 }
