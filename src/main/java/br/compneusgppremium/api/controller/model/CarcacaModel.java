@@ -53,7 +53,6 @@ public class CarcacaModel {
     @Column
     private Date dt_update;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    @Column
     private UUID uuid;
 }
