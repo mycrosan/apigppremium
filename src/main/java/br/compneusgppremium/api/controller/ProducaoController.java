@@ -4,8 +4,6 @@ import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

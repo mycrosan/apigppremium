@@ -70,7 +70,7 @@ public class CarcacaController {
                 }).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "/api/carcaca")
+    @PostMapping(produces = "application/json; charset=UTF-8", path = "/api/carcaca")
     public Object salvar(@RequestBody CarcacaModel carcaca) {
         var statusCarcaca = new StatusCarcacaModel();
         statusCarcaca.setId(1);
@@ -91,8 +91,7 @@ public class CarcacaController {
 
     }
 
-
-    @DeleteMapping(path = "/api/carcaca/{id}")
+    @DeleteMapping(produces = "application/json; charset=UTF-8", path = "/api/carcaca/{id}")
     public Object delete(@PathVariable("id") Integer id) {
         try {
             return repository.findById(id)
@@ -107,7 +106,7 @@ public class CarcacaController {
         }
     }
 
-    @GetMapping(path = "/api/carcaca/pesquisa/{etiqueta}")
+    @GetMapping(produces = "application/json; charset=UTF-8", path = "/api/carcaca/pesquisa/{etiqueta}")
     public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
         try {
             var retornoConsulta = repository.findByEtiqueta(etiqueta);
