@@ -8,30 +8,32 @@
         <version>2.4.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>br.compneusgppremium</groupId>
     <artifactId>gp-premium</artifactId>
     <version>0.0.16-SNAPSHOT</version>
     <name>GP Premium</name>
     <description>Api GP</description>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-
+        <!-- mvn clean package -->
         <!--    Descomentar para gerar war-->
-        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>
-        <deploy.wildfly.port>9990</deploy.wildfly.port>
-        <deploy.wildfly.username>wildfly</deploy.wildfly.username>
-        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>
+        <!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
+        <!--        <deploy.wildfly.port>9990</deploy.wildfly.port>-->
+        <!--        <deploy.wildfly.username>wildfly</deploy.wildfly.username>-->
+        <!--        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>-->
         <!--    Fim -->
-
     </properties>
     <dependencies>
 
         <!--    Descomentar para gerar war-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-tomcat</artifactId>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
         <!--    Fim -->
 
         <dependency>
@@ -97,10 +99,39 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <!-- Flyway -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <!--    Descomentar para gerar war-->
-    <packaging>war</packaging>
+    <!--    <packaging>war</packaging>-->
     <!--    Fim -->
 
     <build>
@@ -113,32 +144,35 @@
                 </configuration>
             </plugin>
             <!--    Descomentar para gerar war-->
-            <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <version>2.0.2.Final</version>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <filename>${project.build.finalName}.war</filename>
-                    <hostname>${deploy.wildfly.host}</hostname>
-                    <port>${deploy.wildfly.port}</port>
-                    <username>${deploy.wildfly.username}</username>
-                    <password>${deploy.wildfly.password}</password>
-                </configuration>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.wildfly.plugins</groupId>-->
+            <!--                <artifactId>wildfly-maven-plugin</artifactId>-->
+            <!--                <version>2.0.2.Final</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>install</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>deploy</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <filename>${project.build.finalName}.war</filename>-->
+            <!--                    <hostname>${deploy.wildfly.host}</hostname>-->
+            <!--                    <port>${deploy.wildfly.port}</port>-->
+            <!--                    <username>${deploy.wildfly.username}</username>-->
+            <!--                    <password>${deploy.wildfly.password}</password>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
             <!--    Fim -->
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <executable>true</executable>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -147,6 +181,32 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!--            <plugin>-->
+            <!--                <groupId>org.flywaydb</groupId>-->
+            <!--                <artifactId>flyway-maven-plugin</artifactId>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>generate-sources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>migrate</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <driver>com.mysql.cj.jdbc.Driver</driver>-->
+            <!--                    <url>jdbc:mysql://192.168.0.106:3306/gppremium?useTimezone=true</url>-->
+            <!--                    <user>monty</user>-->
+            <!--                    <password>some_pass</password>-->
+            <!--                    <baselineOnMigrate>true</baselineOnMigrate>-->
+            <!--                    <schemas>public</schemas>-->
+            <!--                    <locations>-->
+            <!--                        <location>-->
+            <!--                            filesystem:src/main/resources/db/migration-->
+            <!--                        </location>-->
+            <!--                    </locations>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 </project>

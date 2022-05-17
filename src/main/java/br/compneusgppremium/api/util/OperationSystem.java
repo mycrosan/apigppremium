@@ -15,7 +15,7 @@ public class OperationSystem {
         }else if ("Windows".equals(os)){
              caminho = "C://";
         }else {
-             caminho = "/home/cnb/" + place + "/";
+             caminho = "/home/sandy/imagens/" + place + "/";
         }
         return caminho;
     }
