@@ -81,7 +81,7 @@ public class CarcacaController {
             }
             carcaca.setStatus("start");
             carcaca.setStatus_carcaca(statusCarcaca);
-            carcaca.setDados(carcaca.toString());
+//            carcaca.setDados(carcaca.toString());
             carcaca.setDt_create(new Date());
             carcaca.setUuid(UUID.randomUUID());
             return repository.save(carcaca);

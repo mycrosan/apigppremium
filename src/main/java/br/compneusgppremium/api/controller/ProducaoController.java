@@ -92,26 +92,26 @@ public class ProducaoController {
     @GetMapping(path = "/api/producao/pesquisa")
     public Object consultarProducao(@RequestParam Map<Integer, String> params) {
 // Iniciando a consulta
-        var sql = "SELECT p FROM producao p where 1 = 1";
+        var sql = "SELECT pro FROM producao pro where 1 = 1";
 // Montando a consulta
 
-        String modeloId = params.get("modeloId") != "" ? params.get("modeloId") : null;
-        if (modeloId != null)
-            sql = sql + " and p.carcaca.modelo.id = " + modeloId;
+        String modeloId = params.get("modeloId").equals("null") ? "null" : params.get("modeloId");
+        if (!modeloId.equals("null"))
+            sql = sql + " and pro.carcaca.modelo.id =" + modeloId;
 
-        String marcaId = params.get("marcaId") != "" ? params.get("marcaId") : null;
-        if (marcaId != null)
-            sql = sql + " and p.carcaca.modelo.marca.id = " + marcaId;
+        String marcaId = params.get("marcaId").equals("null") ? "null" : params.get("marcaId");
+        if (!marcaId.equals("null"))
+            sql = sql + " and pro.carcaca.modelo.marca.id = " + marcaId;
 
-        String medidaId = params.get("medidaId") != "" ? params.get("medidaId") : null;
-        if (medidaId != null)
-            sql = sql + " and p.carcaca.medida.id = " + medidaId;
+        String medidaId = params.get("medidaId").equals("null") ? "null" : params.get("medidaId");
+        if (!medidaId.equals("null"))
+            sql = sql + " and pro.carcaca.medida.id = " + medidaId;
 
-        String paisId = params.get("paisId") != "" ? params.get("paisId") : null;
-        if (paisId != null)
-            sql = sql + " and p.carcaca.pais.id = " + paisId;
-
-        sql = sql + " ORDER BY p.dt_create ASC";
+        String paisId = params.get("paisId").equals("null") ? "null" : params.get("paisId");
+        if (!paisId.equals("null"))
+            sql = sql + " and pro.carcaca.pais.id = " + paisId;
+//
+        sql = sql + " ORDER BY pro.dt_create ASC";
 
         try {
             Query consulta = entityManager.createQuery(sql);
