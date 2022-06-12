@@ -8,14 +8,16 @@ public class OperationSystem {
     }
 
     public String placeImageSystem(String place) {
-        var os = this.getOperatingSystem();
+        String os = this.getOperatingSystem();
+        String[] splitted = os.split(" ");
+        os = splitted[0];
         String caminho;
-        if("Mac OS X".equals(os)){
-             caminho = "/Users/sandy/Pictures/" + place + "/";
-        }else if ("Windows".equals(os)){
-             caminho = "C://";
-        }else {
-             caminho = "/home/sandy/imagens/" + place + "/";
+        if ("Mac OS X".equals(os)) {
+            caminho = "/Users/sandy/Pictures/" + place + "/";
+        } else if ("Windows".equals(os)) {
+            caminho = "C:\\gppremium\\" + place + "\\";
+        } else {
+            caminho = "/home/sandy/imagens/" + place + "/";
         }
         return caminho;
     }
