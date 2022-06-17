@@ -113,7 +113,7 @@ public class ProducaoController {
 
         String numeroEtiqueta = params.get("numeroEtiqueta").equals("null") ? "null" : params.get("numeroEtiqueta");
         if (!numeroEtiqueta.equals("null"))
-            sql = sql + " and pro.carcaca.numero_etiqueta = " + numeroEtiqueta;
+            sql = sql + " and pro.carcaca.numero_etiqueta = " + "'" + numeroEtiqueta + "'";
 //
         sql = sql + " ORDER BY pro.dt_create ASC";
 
