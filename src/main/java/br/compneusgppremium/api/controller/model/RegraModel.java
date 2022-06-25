@@ -3,6 +3,7 @@ package br.compneusgppremium.api.controller.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Entity(name = "regra")
@@ -34,4 +35,10 @@ public class RegraModel {
     private AntiquebraModel antiquebra2;
     @ManyToOne
     private AntiquebraModel antiquebra3;
+    @Column
+    private Date dt_create;
+    @Column
+    private Date dt_update;
+    @Column
+    private Date dt_delete;
 }
