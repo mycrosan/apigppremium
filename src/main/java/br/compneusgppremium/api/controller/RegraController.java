@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -52,6 +49,7 @@ public class RegraController {
             if (retornoConsulta.size() > 0) {
                 throw new RuntimeException("O sistema encontrou uma regra para os parâmetros enviados, revise as regras cadastradas");
             }
+            regra.setDt_create(new Date());
             return repository.save(regra);
         } catch (Exception ex) {
             System.out.println(ex);
