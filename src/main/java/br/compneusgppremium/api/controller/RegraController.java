@@ -11,9 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -21,6 +25,9 @@ public class RegraController {
 
     @Autowired
     private RegraRepository repository;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @GetMapping(path = "/api/regra")
     public List<RegraModel> findAll() {
@@ -98,5 +105,43 @@ public class RegraController {
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping(path = "/api/regra/consulta")
+    public Object consultarProducao(@RequestParam Map<Integer, String> params) {
+// Iniciando a consulta
+        var sql = "SELECT r FROM regra r where 1 = 1";
+// Montando a consulta
+
+        String modeloId = params.get("modeloId").equals("null") ? "null" : params.get("modeloId");
+        if (!modeloId.equals("null"))
+            sql = sql + " and r.modelo.id = " + modeloId;
+
+        String marcaId = params.get("marcaId").equals("null") ? "null" : params.get("marcaId");
+        if (!marcaId.equals("null"))
+            sql = sql + " and r.modelo.marca.id = " + marcaId;
+
+        String medidaId = params.get("medidaId").equals("null") ? "null" : params.get("medidaId");
+        if (!medidaId.equals("null"))
+            sql = sql + " and r.medida.id = " + medidaId;
+//
+        String paisId = params.get("paisId").equals("null") ? "null" : params.get("paisId");
+        if (!paisId.equals("null"))
+            sql = sql + " and r.pais.id = " + paisId;
+//
+        String numeroRegra = params.get("numeroRegra").equals("null") ? "null" : params.get("numeroRegra");
+        if (!numeroRegra.equals("null"))
+            sql = sql + " and r.id = " + "'" + numeroRegra + "'";
+//
+        sql = sql + " ORDER BY r.dt_create ASC";
+
+        try {
+            Query consulta = entityManager.createQuery(sql);
+            return consulta.setMaxResults(50).getResultList();
+        } catch (Exception e) {
+            return e;
+        }
+
+    }
+
 
 }

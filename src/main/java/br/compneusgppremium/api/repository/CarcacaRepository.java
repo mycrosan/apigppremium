@@ -12,7 +12,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "carcaca", path = "carcaca")
 public interface CarcacaRepository extends CrudRepository<CarcacaModel, Integer> {
 
-    @Query("from carcaca c where c.numero_etiqueta=:numeroEtiqueta and c.status='start'")
+//    @Query("from carcaca c where c.numero_etiqueta=:numeroEtiqueta and c.status='start'")
+    @Query("from carcaca c where c.numero_etiqueta=:numeroEtiqueta")
     public List<Object> findByEtiqueta(@Param("numeroEtiqueta") String numeroEtiqueta);
 
     @Query("from carcaca c where c.status=:statusFilter")
