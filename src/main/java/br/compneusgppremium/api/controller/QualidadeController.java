@@ -44,11 +44,11 @@ public class QualidadeController {
     public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody QualidadeModel qualidade) {
         return repository.findById(id)
                 .map(record -> {
-                    record.setNumero_etiqueta(qualidade.getNumero_etiqueta());
-                    record.setDot(qualidade.getDot());
-                    record.setModelo(qualidade.getModelo());
-                    record.setMedida(qualidade.getMedida());
-                    record.setPais(qualidade.getPais());
+//                    record.setNumero_etiqueta(qualidade.getNumero_etiqueta());
+//                    record.setDot(qualidade.getDot());
+//                    record.setModelo(qualidade.getModelo());
+//                    record.setMedida(qualidade.getMedida());
+//                    record.setPais(qualidade.getPais());
                     QualidadeModel updated = repository.save(record);
                     return ResponseEntity.ok().body(updated);
                 }).orElse(ResponseEntity.notFound().build());
@@ -57,7 +57,7 @@ public class QualidadeController {
     @PostMapping(path = "/api/qualidade")
     public Object salvar(@RequestBody QualidadeModel qualidade) {
         try {
-            qualidade.setStatus("start");
+//            qualidade.setStatus("start");
             return repository.save(qualidade);
         } catch (Exception e) {
             return e;
@@ -84,12 +84,12 @@ public class QualidadeController {
     @GetMapping(path = "/api/qualidade/pesquisa/{etiqueta}")
     public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
         try {
-            var retornoConsulta = repository.findByEtiqueta(etiqueta);
-            if (retornoConsulta.size() > 1) {
-                throw new RuntimeException("O sistema encontrou mais de uma qualidade com a mesma etiqueta");
-            } else if (retornoConsulta.size() == 1) {
-                return retornoConsulta.get(0);
-            }
+//            var retornoConsulta = repository.findByEtiqueta(etiqueta);
+//            if (retornoConsulta.size() > 1) {
+//                throw new RuntimeException("O sistema encontrou mais de uma qualidade com a mesma etiqueta");
+//            } else if (retornoConsulta.size() == 1) {
+//                return retornoConsulta.get(0);
+//            }
             throw new RuntimeException("Carcaça etiqueta " + etiqueta + " não cadastrada");
         } catch (Exception ex) {
             ApiError apiError = new ApiError(HttpStatus.EXPECTATION_FAILED, "Não foi encontrado resultado para etiqueta " + etiqueta, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");

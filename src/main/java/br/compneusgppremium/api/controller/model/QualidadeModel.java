@@ -16,19 +16,18 @@ public class QualidadeModel {
     @ManyToOne
     private ProducaoModel producao;
     @Column
-    private String dot;
-    @Column
-    private String status;
-    @Column
-    @Convert(converter = JpaConverterJson.class)
-    private String dados;
+    private String observacao;
+
     @ManyToOne
-    private ModeloModel modelo;
-    @ManyToOne
-    public MedidaModel medida;
-    @ManyToOne
-    public PaisModel pais;
+    private TipoClassificacaoModel tipoClassificaoModel;
+
     @Column
     @Convert(converter = JpaConverterJson.class)
     public String fotos;
+
+    @ManyToOne
+    private TipoObservacaoModel tipoObservacaoModel;
+
+
+
 }
