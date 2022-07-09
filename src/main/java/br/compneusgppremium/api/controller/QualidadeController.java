@@ -3,6 +3,7 @@ package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.CarcacaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
 import br.compneusgppremium.api.controller.model.QualidadeModel;
+import br.compneusgppremium.api.controller.model.StatusCarcacaModel;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.QualidadeRepository;
 import br.compneusgppremium.api.util.ApiError;
@@ -52,7 +53,6 @@ public class QualidadeController {
                 .map(record -> {
                     record.setProducao(qualidade.getProducao());
                     record.setObservacao(qualidade.getObservacao());
-                    record.setTipo_classificacao(qualidade.getTipo_classificacao());
                     record.setTipo_observacao(qualidade.getTipo_observacao());
                     QualidadeModel updated = qualidadeRepository.save(record);
                     return ResponseEntity.ok().body(updated);
@@ -61,10 +61,12 @@ public class QualidadeController {
 
     @PostMapping(path = "/api/qualidade")
     public Object salvar(@RequestBody QualidadeModel qualidade) {
+        var statusCarcaca = new StatusCarcacaModel();
+        statusCarcaca.setId(3);
         try {
             return carcacaRepository.findById(qualidade.getProducao().getCarcaca().getId())
                     .map(record -> {
-                        record.setStatus("approved");
+//                        record.setStatus("approved");
                         CarcacaModel updated = carcacaRepository.save(record);
                         return qualidadeRepository.save(qualidade);
                     });
