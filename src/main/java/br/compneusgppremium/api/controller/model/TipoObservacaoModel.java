@@ -12,5 +12,5 @@ public class TipoObservacaoModel {
     private Integer id;
     private String descricao;
     @ManyToOne
-    private ClassificacaoModel tipo_classificacao;
+    private TipoClassificacaoModel tipo_classificacao;
 }
