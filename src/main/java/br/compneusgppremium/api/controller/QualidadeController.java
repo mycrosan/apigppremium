@@ -1,10 +1,8 @@
 package br.compneusgppremium.api.controller;
 
-import br.compneusgppremium.api.controller.model.CarcacaModel;
-import br.compneusgppremium.api.controller.model.ProducaoModel;
-import br.compneusgppremium.api.controller.model.QualidadeModel;
-import br.compneusgppremium.api.controller.model.StatusCarcacaModel;
+import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
+import br.compneusgppremium.api.repository.ProducaoRepository;
 import br.compneusgppremium.api.repository.QualidadeRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.OperationSystem;
@@ -17,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -28,6 +28,9 @@ public class QualidadeController {
 
     @Autowired
     private QualidadeRepository qualidadeRepository;
+
+    @Autowired
+    private ProducaoRepository producaoRepository;
 
     @Autowired
     private CarcacaRepository carcacaRepository;
@@ -61,17 +64,35 @@ public class QualidadeController {
 
     @PostMapping(path = "/api/qualidade")
     public Object salvar(@RequestBody QualidadeModel qualidade) {
-        var statusCarcaca = new StatusCarcacaModel();
-        statusCarcaca.setId(3);
+
         try {
-            return carcacaRepository.findById(qualidade.getProducao().getCarcaca().getId())
+            var retornoConsulta = qualidadeRepository.findByProducaoId(qualidade.getProducao().getId());
+            if (retornoConsulta.isPresent()) {
+                throw new RuntimeException("Carcaça Já qualifificada");
+            }
+        } catch (Exception ex) {
+            ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Falha", ex, ex.getCause() != null ? ex.getMessage() : "Erro");
+            return apiError;
+        }
+
+
+        try {
+            var situacao = qualidade.getTipo_observacao().getTipo_classificacao().getId() == 1 ? 3 : 4;
+            var statusCarcaca = new StatusCarcacaModel();
+            statusCarcaca.setId(situacao);
+
+            var producao = producaoRepository.findById(qualidade.getProducao().getId());
+            return carcacaRepository.findById(producao.get().getCarcaca().getId())
                     .map(record -> {
-//                        record.setStatus("approved");
-                        CarcacaModel updated = carcacaRepository.save(record);
+                        record.setStatus("qualify");
+                        record.setStatus_carcaca(statusCarcaca);
+                        carcacaRepository.save(record);
+                        qualidade.setDt_create(new Date());
                         return qualidadeRepository.save(qualidade);
                     });
         } catch (Exception ex) {
-            return ex;
+            ApiError apiError = new ApiError(HttpStatus.NOT_IMPLEMENTED, "Falha", ex, ex.getCause() != null ? ex.getMessage() : "Erro");
+            return apiError;
         }
     }
 

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "controle_qualidade")
 @Data
@@ -22,4 +23,6 @@ public class QualidadeModel {
     public String fotos;
     @ManyToOne
     private TipoObservacaoModel tipo_observacao;
+    @Column
+    private Date dt_create;
 }
