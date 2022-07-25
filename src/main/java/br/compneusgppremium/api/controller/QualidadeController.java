@@ -68,7 +68,7 @@ public class QualidadeController {
         try {
             var retornoConsulta = qualidadeRepository.findByProducaoId(qualidade.getProducao().getId());
             if (retornoConsulta.isPresent()) {
-                throw new RuntimeException("Carcaça Já qualifificada");
+                throw new RuntimeException("Carcaça Já qualificada");
             }
         } catch (Exception ex) {
             ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Falha", ex, ex.getCause() != null ? ex.getMessage() : "Erro");
