@@ -38,7 +38,8 @@ public class CarcacaRejeitadaController {
             return e;
         }
     }
-//
+
+    //
     @GetMapping(path = "/api/carcacarejeitada/{id}")
     public ResponseEntity consultar(@PathVariable("id") Integer id) {
         return repository.findById(id)
@@ -60,12 +61,22 @@ public class CarcacaRejeitadaController {
 
     @PostMapping(produces = "application/json; charset=UTF-8", path = "/api/carcacarejeitada")
     public Object salvar(@RequestBody CarcacaRejeitadaModel carcaca) {
+        var sql = "SELECT cr FROM carcaca_rejeitada cr where cr.modelo.id=" + carcaca.getModelo().getId() +
+                " and cr.medida.id=" + carcaca.getMedida().getId() +
+                " and cr.pais.id=" + carcaca.getPais().getId();
+// Montando a consulta
         try {
+            Query consulta = entityManager.createQuery(sql);
+            var values = consulta.setMaxResults(50).getResultList();
+//            int values = ((Number) consulta.getSingleResult()).intValue();
+            if (values.size() > 0) {
+                throw new RuntimeException("Já cadastrada!");
+            }
             carcaca.setDt_create(new Date());
             carcaca.setUuid(UUID.randomUUID());
             return repository.save(carcaca);
         } catch (Exception e) {
-            return e;
+            return e.getMessage();
         }
 
     }
