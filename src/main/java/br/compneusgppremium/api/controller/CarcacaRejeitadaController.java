@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -67,16 +68,17 @@ public class CarcacaRejeitadaController {
 // Montando a consulta
         try {
             Query consulta = entityManager.createQuery(sql);
-            var values = consulta.setMaxResults(50).getResultList();
-//            int values = ((Number) consulta.getSingleResult()).intValue();
+            List values = consulta.getResultList();
             if (values.size() > 0) {
                 throw new RuntimeException("Já cadastrada!");
             }
             carcaca.setDt_create(new Date());
             carcaca.setUuid(UUID.randomUUID());
             return repository.save(carcaca);
-        } catch (Exception e) {
-            return e.getMessage();
+        } catch (Exception ex) {
+            System.out.println(ex);
+            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString(): "Erro");
+            return apiError;
         }
 
     }
