@@ -74,8 +74,26 @@ public class CarcacaController {
     public Object salvar(@RequestBody CarcacaModel carcaca) {
         var statusCarcaca = new StatusCarcacaModel();
         statusCarcaca.setId(1);
+
+        var sql = "SELECT cr FROM carcaca_rejeitada cr where cr.modelo.id=" + carcaca.getModelo().getId() +
+                " and cr.medida.id=" + carcaca.getMedida().getId() +
+                " and cr.pais.id=" + carcaca.getPais().getId();
+
         try {
-            var retornoConsulta = repository.findByEtiquetaDuplicate(carcaca.getNumero_etiqueta());
+            Query consulta = entityManager.createQuery(sql);
+            List values = consulta.getResultList();
+            if (values.size() > 0) {
+                throw new RuntimeException("Carcaca Proibída!");
+            }
+        } catch (Exception ex) {
+            System.out.println(ex);
+            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString(): "Erro");
+            return apiError;
+        }
+
+        try {
+            List retornoConsulta = repository.findByEtiquetaDuplicate(carcaca.getNumero_etiqueta());
+
             if (retornoConsulta.size() > 0) {
                 throw new RuntimeException("Etiqueta duplicada, favor inserir uma etiqueta diferente");
             }
@@ -133,4 +151,24 @@ public class CarcacaController {
         }
         return null;
     }
+
+//    private Object checkReject(CarcacaModel carcaca){
+//
+//        var sql = "SELECT cr FROM carcaca_rejeitada cr where cr.modelo.id=" + carcaca.getModelo().getId() +
+//                " and cr.medida.id=" + carcaca.getMedida().getId() +
+//                " and cr.pais.id=" + carcaca.getPais().getId();
+//
+//        try {
+//            Query consulta = entityManager.createQuery(sql);
+//            List values = consulta.getResultList();
+//            if (values.size() > 0) {
+//                throw new RuntimeException("Carcaca Proibída!");
+//            }
+//        } catch (Exception ex) {
+//            System.out.println(ex);
+//            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString(): "Erro");
+//            return apiError;
+//        }
+//        return false;
+//    }
 }
