@@ -56,8 +56,25 @@ public class CarcacaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping(path = "/api/carcaca/{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody CarcacaModel carcaca) {
+    @PutMapping(produces = "application/json; charset=UTF-8", path = "/api/carcaca/{id}")
+    public Object atualizar(@PathVariable("id") Integer id, @RequestBody CarcacaModel carcaca) {
+
+        var sql = "SELECT cr FROM carcaca_rejeitada cr where cr.modelo.id=" + carcaca.getModelo().getId() +
+                " and cr.medida.id=" + carcaca.getMedida().getId() +
+                " and cr.pais.id=" + carcaca.getPais().getId();
+
+        try {
+            Query consulta = entityManager.createQuery(sql);
+            List values = consulta.getResultList();
+            if (values.size() > 0) {
+                throw new RuntimeException("Carcaca Proibída!");
+            }
+        } catch (Exception ex) {
+            System.out.println(ex);
+            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString() : "Erro");
+            return apiError;
+        }
+
         return repository.findById(id)
                 .map(record -> {
                     record.setNumero_etiqueta(carcaca.getNumero_etiqueta());
@@ -87,7 +104,7 @@ public class CarcacaController {
             }
         } catch (Exception ex) {
             System.out.println(ex);
-            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString(): "Erro");
+            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString() : "Erro");
             return apiError;
         }
 
