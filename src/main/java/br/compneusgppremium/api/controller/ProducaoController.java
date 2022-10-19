@@ -29,7 +29,7 @@ public class ProducaoController {
         var sql = "SELECT p FROM producao p ORDER BY p.dt_create DESC";
         try {
             Query consulta = entityManager.createQuery(sql);
-            return consulta.setMaxResults(50).getResultList();
+            return consulta.setMaxResults(100).getResultList();
         } catch (Exception e) {
             return e;
         }
@@ -119,7 +119,7 @@ public class ProducaoController {
 
         try {
             Query consulta = entityManager.createQuery(sql);
-            return consulta.setMaxResults(50).getResultList();
+            return consulta.getResultList();
         } catch (Exception e) {
             return e;
         }
