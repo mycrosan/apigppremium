@@ -3,7 +3,9 @@ package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
+import br.compneusgppremium.api.util.ApiError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,11 +44,19 @@ public class ProducaoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "/api/producao")
+    @PostMapping(produces = "application/json; charset=UTF-8", path = "/api/producao")
     public Object salvar(@RequestBody ProducaoModel producao) {
         var statusCarcaca = new StatusCarcacaModel();
         statusCarcaca.setId(2);
+        var sql = "SELECT p FROM producao p where p.carcaca.id=" + producao.getCarcaca().getId();
+
         try {
+            Query consulta = entityManager.createQuery(sql);
+            List values = consulta.getResultList();
+            if (values.size() > 0) {
+                throw new RuntimeException("Já produzido!");
+            }
+
             return carcacaRepository.findById(producao.getCarcaca().getId())
                     .map(record -> {
                         record.setStatus("in_production");
@@ -58,7 +68,9 @@ public class ProducaoController {
                         return producaoRepository.save(producao);
                     });
         } catch (Exception ex) {
-            return ex;
+            System.out.println(ex);
+            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString() : "Erro");
+            return apiError;
         }
     }
 

@@ -12,4 +12,8 @@ import java.util.Map;
 
 @RepositoryRestResource(collectionResourceRel = "producao", path = "producao")
 public interface ProducaoRepository extends CrudRepository<ProducaoModel, Integer> {
+
+    @Query("from producao p where p.carcaca.numero_etiqueta=:numeroEtiqueta")
+    public List<Object> findDuplicate(@Param("numeroEtiqueta") String numeroEtiqueta);
+
 }
