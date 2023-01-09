@@ -49,12 +49,14 @@ public class CarcacaRejeitadaController {
     }
 
     @PutMapping(path = "/api/carcacarejeitada/{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody CarcacaRejeitadaModel carcaca) {
+    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody CarcacaRejeitadaModel carcacaRejeitada) {
         return repository.findById(id)
                 .map(record -> {
-                    record.setModelo(carcaca.getModelo());
-                    record.setMedida(carcaca.getMedida());
-                    record.setPais(carcaca.getPais());
+                    record.setModelo(carcacaRejeitada.getModelo());
+                    record.setMedida(carcacaRejeitada.getMedida());
+                    record.setPais(carcacaRejeitada.getPais());
+                    record.setMotivo(carcacaRejeitada.getMotivo());
+                    record.setDescricao(carcacaRejeitada.getDescricao());
                     CarcacaRejeitadaModel updated = repository.save(record);
                     return ResponseEntity.ok().body(updated);
                 }).orElse(ResponseEntity.notFound().build());
