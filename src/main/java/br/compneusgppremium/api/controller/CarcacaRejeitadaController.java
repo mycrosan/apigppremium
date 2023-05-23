@@ -29,12 +29,12 @@ public class CarcacaRejeitadaController {
     @PersistenceContext
     EntityManager entityManager;
 
-    @GetMapping(path = "/api/carcacarejeitada")
+    @GetMapping(produces = "application/json; charset=UTF-8", path = "/api/carcacarejeitada")
     public Object findAll() {
         var sql = "SELECT cr FROM carcaca_rejeitada cr ORDER BY cr.dt_create DESC";
         try {
             Query consulta = entityManager.createQuery(sql);
-            return consulta.setMaxResults(50).getResultList();
+            return consulta.setMaxResults(100).getResultList();
         } catch (Exception e) {
             return e;
         }

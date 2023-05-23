@@ -7,10 +7,14 @@ import br.compneusgppremium.api.repository.QualidadeRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.OperationSystem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,12 +39,25 @@ public class QualidadeController {
     @Autowired
     private CarcacaRepository carcacaRepository;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
+//    @GetMapping(path = "/api/qualidade")
+//    public List<QualidadeModel> findAll() {
+//        var it = qualidadeRepository.findAll();
+//        var qualidades = new ArrayList<QualidadeModel>();
+//        it.forEach(e -> qualidades.add(e));
+//        return qualidades;
+//    }
     @GetMapping(path = "/api/qualidade")
-    public List<QualidadeModel> findAll() {
-        var it = qualidadeRepository.findAll();
-        var qualidades = new ArrayList<QualidadeModel>();
-        it.forEach(e -> qualidades.add(e));
-        return qualidades;
+    public Object findAll() {
+        var sql = "SELECT cq FROM controle_qualidade cq ORDER BY cq.dt_create DESC";
+        try {
+            Query consulta = entityManager.createQuery(sql);
+            return consulta.setMaxResults(100).getResultList();
+        } catch (Exception e) {
+            return e;
+        }
     }
 
     @GetMapping(path = "/api/qualidade/{id}")

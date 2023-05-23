@@ -16,7 +16,7 @@ SELECT
 FROM
     gppremium.producao p
         JOIN
-    carcaca c ON c.id = p.id
+    carcaca c ON c.id = p.carcaca_id
         JOIN
     medida md ON md.id = c.medida_id
         JOIN
