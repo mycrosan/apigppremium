@@ -12,12 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,9 +26,6 @@ import java.util.UUID;
 
 @RestController
 public class CarcacaController {
-
-    // caminho da imagem
-//    private static String caminhoImagem = new OperationSystem().placeImageSystem("carcaca");
 
     @Autowired
     private CarcacaRepository repository;

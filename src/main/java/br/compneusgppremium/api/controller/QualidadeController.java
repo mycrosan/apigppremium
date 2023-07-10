@@ -5,9 +5,8 @@ import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import br.compneusgppremium.api.repository.QualidadeRepository;
 import br.compneusgppremium.api.util.ApiError;
-import br.compneusgppremium.api.util.OperationSystem;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+
 
 
 @RestController
 public class QualidadeController {
-
-    // caminho da imagem
-//    private static String caminhoImagem = new OperationSystem().placeImageSystem("qualidade");
 
     @Autowired
     private QualidadeRepository qualidadeRepository;
@@ -125,6 +116,21 @@ public class QualidadeController {
         } catch (Exception ex) {
             System.out.println(ex);
             ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Não foi possível excluir!" + id, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
+            return apiError;
+        }
+    }
+    @GetMapping(produces = "application/json; charset=UTF-8", path = "/api/qualidade/pesquisa/{etiqueta}")
+    public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
+        try {
+            var retornoConsulta = qualidadeRepository.findByEtiqueta(etiqueta);
+            if (retornoConsulta.size() > 1) {
+                throw new RuntimeException("O sistema encontrou mais de uma carcaca com a mesma etiqueta");
+            } else if (retornoConsulta.size() == 1) {
+                return retornoConsulta.get(0);
+            }
+            throw new RuntimeException("Carcaça etiqueta " + etiqueta + " não qualificada");
+        } catch (Exception ex) {
+            ApiError apiError = new ApiError(HttpStatus.PRECONDITION_REQUIRED, "Carcaça" + etiqueta + " não localizada! Tente qualifica-la", ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
     }
