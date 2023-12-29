@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -34,7 +35,7 @@ public class CarcacaRejeitadaController {
         var sql = "SELECT cr FROM carcaca_rejeitada cr ORDER BY cr.dt_create DESC";
         try {
             Query consulta = entityManager.createQuery(sql);
-            return consulta.setMaxResults(100).getResultList();
+            return consulta.setMaxResults(200).getResultList();
         } catch (Exception e) {
             return e;
         }
@@ -98,5 +99,42 @@ public class CarcacaRejeitadaController {
             ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Não foi possível excluir a carçaca " + id, ex, ex.getCause() != null ? ex.getCause().getCause().getMessage() : "Erro");
             return apiError;
         }
+    }
+
+    @GetMapping(path = "/api/carcacarejeitada/pesquisa")
+    public Object consultarRejeitada(@RequestParam Map<Integer, String> params) {
+// Iniciando a consulta
+        var sql = "SELECT pro FROM producao pro where 1 = 1";
+// Montando a consulta
+
+        String modeloId = params.get("modeloId").equals("null") ? "null" : params.get("modeloId");
+        if (!modeloId.equals("null"))
+            sql = sql + " and pro.carcaca.modelo.id =" + modeloId;
+
+        String marcaId = params.get("marcaId").equals("null") ? "null" : params.get("marcaId");
+        if (!marcaId.equals("null"))
+            sql = sql + " and pro.carcaca.modelo.marca.id = " + marcaId;
+
+        String medidaId = params.get("medidaId").equals("null") ? "null" : params.get("medidaId");
+        if (!medidaId.equals("null"))
+            sql = sql + " and pro.carcaca.medida.id = " + medidaId;
+
+        String paisId = params.get("paisId").equals("null") ? "null" : params.get("paisId");
+        if (!paisId.equals("null"))
+            sql = sql + " and pro.carcaca.pais.id = " + paisId;
+
+        String numeroEtiqueta = params.get("numeroEtiqueta").equals("null") ? "null" : params.get("numeroEtiqueta");
+        if (!numeroEtiqueta.equals("null"))
+            sql = sql + " and pro.carcaca.numero_etiqueta = " + "'" + numeroEtiqueta + "'";
+//
+        sql = sql + " ORDER BY pro.dt_create ASC";
+
+        try {
+            Query consulta = entityManager.createQuery(sql);
+            return consulta.getResultList();
+        } catch (Exception e) {
+            return e;
+        }
+
     }
 }
