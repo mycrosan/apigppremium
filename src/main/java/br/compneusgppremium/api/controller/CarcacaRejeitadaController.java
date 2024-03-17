@@ -100,30 +100,26 @@ public class CarcacaRejeitadaController {
     @GetMapping(path = "/api/carcacarejeitada/pesquisa")
     public Object consultarRejeitada(@RequestParam Map<Integer, String> params) {
 // Iniciando a consulta
-        var sql = "SELECT pro FROM producao pro where 1 = 1";
+        var sql = "SELECT r FROM carcaca_rejeitada r where 1 = 1";
 // Montando a consulta
 
         String modeloId = params.get("modeloId").equals("null") ? "null" : params.get("modeloId");
         if (!modeloId.equals("null"))
-            sql = sql + " and pro.carcaca.modelo.id =" + modeloId;
+            sql = sql + " and r.modelo.id =" + modeloId;
 
         String marcaId = params.get("marcaId").equals("null") ? "null" : params.get("marcaId");
         if (!marcaId.equals("null"))
-            sql = sql + " and pro.carcaca.modelo.marca.id = " + marcaId;
+            sql = sql + " and r.modelo.marca.id = " + marcaId;
 
         String medidaId = params.get("medidaId").equals("null") ? "null" : params.get("medidaId");
         if (!medidaId.equals("null"))
-            sql = sql + " and pro.carcaca.medida.id = " + medidaId;
+            sql = sql + " and r.medida.id = " + medidaId;
 
         String paisId = params.get("paisId").equals("null") ? "null" : params.get("paisId");
         if (!paisId.equals("null"))
-            sql = sql + " and pro.carcaca.pais.id = " + paisId;
+            sql = sql + " and r.pais.id = " + paisId;
 
-        String numeroEtiqueta = params.get("numeroEtiqueta").equals("null") ? "null" : params.get("numeroEtiqueta");
-        if (!numeroEtiqueta.equals("null"))
-            sql = sql + " and pro.carcaca.numero_etiqueta = " + "'" + numeroEtiqueta + "'";
-//
-        sql = sql + " ORDER BY pro.dt_create ASC";
+        sql = sql + " ORDER BY r.dt_create ASC";
 
         try {
             Query consulta = entityManager.createQuery(sql);
