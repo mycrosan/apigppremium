@@ -14,18 +14,20 @@ import java.util.List;
 public class UsuarioModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
     @Column
-    public String nome;
+    private String nome;
     @Column
-    public String login;
+    private String login;
     @Column
-    public String senha;
+    private String senha;
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuario_perfil",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id")
+    )
     private List<PerfilModel> perfil = new ArrayList<>();
-
-//    @ManyToOne
-//    private PerfilModel perfil;
 
     @Override
     public int hashCode() {
@@ -61,6 +63,11 @@ public class UsuarioModel implements UserDetails {
     public String getPassword() {
         return this.senha;
     }
+
+    public void setPassword(String encode) {
+        this.senha = encode;
+    }
+
 
     @Override
     public String getUsername() {

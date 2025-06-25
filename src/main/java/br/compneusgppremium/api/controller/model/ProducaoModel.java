@@ -39,4 +39,8 @@ public class ProducaoModel {
 
     @Column
     private UUID uuid;
+
+    @ManyToOne
+    @JoinColumn(name = "criado_por")
+    private UsuarioModel criadoPor;
 }

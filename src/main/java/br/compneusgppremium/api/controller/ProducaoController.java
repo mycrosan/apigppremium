@@ -3,6 +3,7 @@ package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
+import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.ApiError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,12 @@ public class ProducaoController {
     private ProducaoRepository producaoRepository;
     @Autowired
     private CarcacaRepository carcacaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private br.compneusgppremium.api.util.UsuarioLogadoUtil usuarioLogadoUtil;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -53,26 +60,40 @@ public class ProducaoController {
         try {
             Query consulta = entityManager.createQuery(sql);
             List values = consulta.getResultList();
-            if (values.size() > 0) {
+            if (!values.isEmpty()) {
                 throw new RuntimeException("Já produzido!");
             }
 
             return carcacaRepository.findById(producao.getCarcaca().getId())
                     .map(record -> {
+                        // Atualiza o status da carcaça
                         record.setStatus("in_production");
                         record.setStatus_carcaca(statusCarcaca);
                         carcacaRepository.save(record);
+
+                        // Preenche campos da produção
                         producao.setDados(producao.toString());
                         producao.setDt_create(new Date());
+                        producao.setDt_update(new Date());
                         producao.setUuid(UUID.randomUUID());
+
+                        // Adiciona o usuário logado como criador
+                        Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
+                        UsuarioModel usuario = usuarioRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                        producao.setCriadoPor(usuario);
+
                         return producaoRepository.save(producao);
-                    });
+                    }).orElseThrow(() -> new RuntimeException("Carcaça não encontrada"));
+
         } catch (Exception ex) {
-            System.out.println(ex);
-            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex, ex.getCause() != null ? ex.getCause().toString() : "Erro");
+            ex.printStackTrace();
+            ApiError apiError = new ApiError(HttpStatus.OK, ex.getMessage(), ex,
+                    ex.getCause() != null ? ex.getCause().toString() : "Erro");
             return apiError;
         }
     }
+
 
     @PutMapping(path = "/api/producao/{id}")
     public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody ProducaoModel producao) {

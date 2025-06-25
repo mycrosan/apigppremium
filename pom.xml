@@ -17,10 +17,10 @@
         <java.version>11</java.version>
 
         <!--    Descomentar para gerar war-->
-<!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
-<!--        <deploy.wildfly.port>9990</deploy.wildfly.port>-->
-<!--        <deploy.wildfly.username>wildfly</deploy.wildfly.username>-->
-<!--        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>-->
+        <!--        <deploy.wildfly.host>127.0.0.1</deploy.wildfly.host>-->
+        <!--        <deploy.wildfly.port>9990</deploy.wildfly.port>-->
+        <!--        <deploy.wildfly.username>wildfly</deploy.wildfly.username>-->
+        <!--        <deploy.wildfly.password>w1ldFly!</deploy.wildfly.password>-->
         <!--    Fim -->
 
     </properties>
