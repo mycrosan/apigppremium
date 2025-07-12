@@ -36,36 +36,36 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
-    //Configuracoes de autenticacao
+    // Configurações de autenticação
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(autenticacaoService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
-    //Configuracoes de autorizacao
+    // Configurações de autorização
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/api/auth").permitAll()
                 .antMatchers("/api/status").permitAll()
                 .antMatchers("/api/upload").permitAll()
-                .antMatchers(HttpMethod.GET, "/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/**").permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/*").permitAll();
                 .anyRequest().authenticated()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
+                .and()
+                .addFilterBefore(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository),
+                        UsernamePasswordAuthenticationFilter.class);
     }
 
-
-    //Configuracoes de recursos estaticos(js, css, imagens, etc.)
+    // Configurações de recursos estáticos
     @Override
     public void configure(WebSecurity web) throws Exception {
+        // Se quiser liberar Swagger, por exemplo:
+        // web.ignoring().antMatchers("/swagger-ui/**", "/v3/api-docs/**");
     }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

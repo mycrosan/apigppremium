@@ -1,10 +1,12 @@
 package br.compneusgppremium.api.controller;
 
+import br.compneusgppremium.api.controller.dto.ProducaoDTO;
 import br.compneusgppremium.api.controller.model.*;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
 import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.ApiError;
+import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +17,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.*;
 
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @RestController
 public class ProducaoController {
 
     @Autowired
     private ProducaoRepository producaoRepository;
+
     @Autowired
     private CarcacaRepository carcacaRepository;
 
@@ -28,26 +32,52 @@ public class ProducaoController {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private br.compneusgppremium.api.util.UsuarioLogadoUtil usuarioLogadoUtil;
+    private UsuarioLogadoUtil usuarioLogadoUtil;
 
     @PersistenceContext
     EntityManager entityManager;
 
     @GetMapping(path = "/api/producao")
-    public Object findAll() {
+    public List<ProducaoDTO> findAll() {
         var sql = "SELECT p FROM producao p ORDER BY p.dt_create DESC";
-        try {
-            Query consulta = entityManager.createQuery(sql);
-            return consulta.setMaxResults(100).getResultList();
-        } catch (Exception e) {
-            return e;
+        List<ProducaoModel> producoes = entityManager.createQuery(sql, ProducaoModel.class)
+                .setMaxResults(100)
+                .getResultList();
+
+        List<ProducaoDTO> dtoList = new ArrayList<>();
+        for (ProducaoModel p : producoes) {
+            dtoList.add(new ProducaoDTO(
+                    p.getId(),
+                    p.getCarcaca(),
+                    p.getMedida_pneu_raspado(),
+                    p.getRegra(),
+                    p.getFotos(),
+                    p.getDt_create(),
+                    p.getCriadoPor() != null ? p.getCriadoPor().getNome() : null,
+                    p.getCriadoPor() != null ? p.getCriadoPor().getLogin() : null
+            ));
         }
+
+        return dtoList;
     }
 
     @GetMapping(path = "/api/producao/{id}")
-    public ResponseEntity consultar(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> consultar(@PathVariable("id") Integer id) {
         return producaoRepository.findById(id)
-                .map(record -> ResponseEntity.ok().body(record))
+                .map(record -> {
+                    ProducaoModel p = record;
+                    ProducaoDTO dto = new ProducaoDTO(
+                            p.getId(),
+                            p.getCarcaca(),
+                            p.getMedida_pneu_raspado(),
+                            p.getRegra(),
+                            p.getFotos(),
+                            p.getDt_create(),
+                            p.getCriadoPor() != null ? p.getCriadoPor().getNome() : null,
+                            p.getCriadoPor() != null ? p.getCriadoPor().getLogin() : null
+                    );
+                    return ResponseEntity.ok().body(dto);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -55,6 +85,7 @@ public class ProducaoController {
     public Object salvar(@RequestBody ProducaoModel producao) {
         var statusCarcaca = new StatusCarcacaModel();
         statusCarcaca.setId(2);
+
         var sql = "SELECT p FROM producao p where p.carcaca.id=" + producao.getCarcaca().getId();
 
         try {
@@ -66,18 +97,15 @@ public class ProducaoController {
 
             return carcacaRepository.findById(producao.getCarcaca().getId())
                     .map(record -> {
-                        // Atualiza o status da carcaça
                         record.setStatus("in_production");
                         record.setStatus_carcaca(statusCarcaca);
                         carcacaRepository.save(record);
 
-                        // Preenche campos da produção
                         producao.setDados(producao.toString());
                         producao.setDt_create(new Date());
                         producao.setDt_update(new Date());
                         producao.setUuid(UUID.randomUUID());
 
-                        // Adiciona o usuário logado como criador
                         Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
                         UsuarioModel usuario = usuarioRepository.findById(userId)
                                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -94,9 +122,8 @@ public class ProducaoController {
         }
     }
 
-
     @PutMapping(path = "/api/producao/{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody ProducaoModel producao) {
+    public ResponseEntity<?> atualizar(@PathVariable("id") Integer id, @RequestBody ProducaoModel producao) {
         return producaoRepository.findById(id)
                 .map(record -> {
                     record.setCarcaca(producao.getCarcaca());
@@ -114,8 +141,8 @@ public class ProducaoController {
                     carcacaRepository.findById(record.getCarcaca().getId())
                             .map(record2 -> {
                                 record2.setStatus("start");
-                                CarcacaModel updated = carcacaRepository.save(record2);
-                                return ResponseEntity.ok().body(updated);
+                                carcacaRepository.save(record2);
+                                return null;
                             });
                     producaoRepository.deleteById(id);
                     return ResponseEntity.ok().build();
@@ -123,39 +150,88 @@ public class ProducaoController {
     }
 
     @GetMapping(path = "/api/producao/pesquisa")
-    public Object consultarProducao(@RequestParam Map<Integer, String> params) {
-// Iniciando a consulta
-        var sql = "SELECT pro FROM producao pro where 1 = 1";
-// Montando a consulta
+    public ResponseEntity<?> consultarProducao(
+            @RequestParam(required = false) String modeloId,
+            @RequestParam(required = false) String marcaId,
+            @RequestParam(required = false) String medidaId,
+            @RequestParam(required = false) String paisId,
+            @RequestParam(required = false) String numeroEtiqueta) {
 
-        String modeloId = params.get("modeloId").equals("null") ? "null" : params.get("modeloId");
-        if (!modeloId.equals("null"))
-            sql = sql + " and pro.carcaca.modelo.id =" + modeloId;
+        StringBuilder sql = new StringBuilder("SELECT pro FROM producao pro WHERE 1 = 1");
+        Map<String, Object> parametros = new HashMap<>();
 
-        String marcaId = params.get("marcaId").equals("null") ? "null" : params.get("marcaId");
-        if (!marcaId.equals("null"))
-            sql = sql + " and pro.carcaca.modelo.marca.id = " + marcaId;
+        Integer modeloIdInt = parseIntegerOrNull(modeloId);
+        Integer marcaIdInt = parseIntegerOrNull(marcaId);
+        Integer medidaIdInt = parseIntegerOrNull(medidaId);
+        Integer paisIdInt = parseIntegerOrNull(paisId);
 
-        String medidaId = params.get("medidaId").equals("null") ? "null" : params.get("medidaId");
-        if (!medidaId.equals("null"))
-            sql = sql + " and pro.carcaca.medida.id = " + medidaId;
-
-        String paisId = params.get("paisId").equals("null") ? "null" : params.get("paisId");
-        if (!paisId.equals("null"))
-            sql = sql + " and pro.carcaca.pais.id = " + paisId;
-
-        String numeroEtiqueta = params.get("numeroEtiqueta").equals("null") ? "null" : params.get("numeroEtiqueta");
-        if (!numeroEtiqueta.equals("null"))
-            sql = sql + " and pro.carcaca.numero_etiqueta = " + "'" + numeroEtiqueta + "'";
-//
-        sql = sql + " ORDER BY pro.dt_create ASC";
-
-        try {
-            Query consulta = entityManager.createQuery(sql);
-            return consulta.getResultList();
-        } catch (Exception e) {
-            return e;
+        if (modeloIdInt != null) {
+            sql.append(" AND pro.carcaca.modelo.id = :modeloId");
+            parametros.put("modeloId", modeloIdInt);
+        }
+        if (marcaIdInt != null) {
+            sql.append(" AND pro.carcaca.modelo.marca.id = :marcaId");
+            parametros.put("marcaId", marcaIdInt);
+        }
+        if (medidaIdInt != null) {
+            sql.append(" AND pro.carcaca.medida.id = :medidaId");
+            parametros.put("medidaId", medidaIdInt);
+        }
+        if (paisIdInt != null) {
+            sql.append(" AND pro.carcaca.pais.id = :paisId");
+            parametros.put("paisId", paisIdInt);
         }
 
+        if (numeroEtiqueta != null && !numeroEtiqueta.isBlank() && !"null".equalsIgnoreCase(numeroEtiqueta.trim())) {
+            sql.append(" AND pro.carcaca.numero_etiqueta = :numeroEtiqueta");
+            parametros.put("numeroEtiqueta", numeroEtiqueta.trim());
+        }
+
+        sql.append(" ORDER BY pro.dt_create ASC");
+
+        try {
+            Query query = entityManager.createQuery(sql.toString());
+
+            for (Map.Entry<String, Object> entry : parametros.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            @SuppressWarnings("unchecked")
+            List<ProducaoModel> producoes = query.getResultList();
+
+            List<ProducaoDTO> dtos = new ArrayList<>();
+            for (ProducaoModel p : producoes) {
+                dtos.add(new ProducaoDTO(
+                        p.getId(),
+                        p.getCarcaca(),
+                        p.getMedida_pneu_raspado(),
+                        p.getRegra(),
+                        p.getFotos(),
+                        p.getDt_create(),
+                        p.getCriadoPor() != null ? p.getCriadoPor().getNome() : null,
+                        p.getCriadoPor() != null ? p.getCriadoPor().getLogin() : null
+                ));
+            }
+
+            return ResponseEntity.ok(dtos);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao consultar produção: " + e.getMessage());
+        }
     }
+
+
+    private Integer parseIntegerOrNull(String valor) {
+        if (valor == null || valor.isBlank() || valor.equalsIgnoreCase("null")) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(valor);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 }

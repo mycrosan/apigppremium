@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller.model;
 
 import br.compneusgppremium.api.util.JpaConverterJson;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -41,6 +42,6 @@ public class ProducaoModel {
     private UUID uuid;
 
     @ManyToOne
-    @JoinColumn(name = "criado_por")
+    @JoinColumn(name = "usuario_id")
     private UsuarioModel criadoPor;
 }

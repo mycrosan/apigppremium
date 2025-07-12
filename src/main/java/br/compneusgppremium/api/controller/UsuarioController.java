@@ -41,13 +41,7 @@ public class UsuarioController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-    @PostMapping("/salvar")
-    public UsuarioModel salvar(@RequestBody UsuarioModel usuario) {
-        return repository.save(usuario);
-    }
-
-    @PostMapping("/criar")
+    @PostMapping
     @Transactional
     public ResponseEntity<?> criarUsuario(@RequestBody UsuarioModel usuarioRequest) {
         try {
@@ -68,6 +62,40 @@ public class UsuarioController {
             return ResponseEntity.status(500).body("Erro ao criar usuário: " + e.getMessage());
         }
     }
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> atualizarUsuario(@PathVariable("id") Long id, @RequestBody UsuarioModel usuarioRequest) {
+        return repository.findById(id)
+                .map(usuarioExistente -> {
+                    // Atualiza os campos
+                    usuarioExistente.setNome(usuarioRequest.getNome());
+                    usuarioExistente.setLogin(usuarioRequest.getLogin());
+
+                    // Se a senha foi alterada, criptografa a nova senha
+                    if (usuarioRequest.getPassword() != null && !usuarioRequest.getPassword().isEmpty()) {
+                        usuarioExistente.setPassword(encoder.encode(usuarioRequest.getPassword()));
+                    }
+
+//                    usuarioExistente.setStatus(usuarioRequest.getStatus());
+
+                    // Valida e atualiza os perfis
+                    List<PerfilModel> perfisValidados = carregarPerfisValidados(usuarioRequest.getPerfil());
+                    usuarioExistente.setPerfil(perfisValidados);
+
+                    UsuarioModel usuarioAtualizado = repository.save(usuarioExistente);
+                    return ResponseEntity.ok(usuarioAtualizado);
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        return repository.findById(id)
+                .map(usuario -> {
+                    repository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
 
     private boolean loginJaExiste(String login) {
         return repository.findByLogin(login).isPresent();

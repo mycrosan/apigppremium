@@ -13,7 +13,7 @@ public class OperationSystem {
         os = splitted[0];
         String caminho;
         if ("Mac".equals(os)) {
-            caminho = "/Users/sandy/Pictures/" + place + "/";
+            caminho = "/Users/my/Pictures/" + place + "/";
         } else if ("Windows".equals(os)) {
             caminho = "C:\\gppremium\\" + place + "\\";
         } else {

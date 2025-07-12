@@ -27,9 +27,9 @@ public class CarcacaModel {
     @Column
     private String status;
 
-    @Column
-    @Convert(converter = JpaConverterJson.class)
-    private String dados;
+//    @Column
+//    @Convert(converter = JpaConverterJson.class)
+//    private String dados;
 
     @ManyToOne
     private ModeloModel modelo;
