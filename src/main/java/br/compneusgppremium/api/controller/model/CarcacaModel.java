@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Entity(name = "carcaca")
 @Data
-@Service
 public class CarcacaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

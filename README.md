@@ -58,6 +58,8 @@ flutter build appbundle
 COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME  
 java     **12345**  you   ...  TCP  ...    LISTEN    ...
 - kill -9 12345
+## sdk default java 11.0.17-tem
+
 
 
 
