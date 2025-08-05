@@ -78,15 +78,17 @@ public class CoberturaController {
 
 
     // PUT - Atualizar
-//    @PutMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
-//    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody CoberturaModel novaCobertura) {
-//        return repository.findById(id).map(coberturaExistente -> {
-//            coberturaExistente.setFotos(novaCobertura.getFotos());
-//            coberturaExistente.setProducao(novaCobertura.getProducao());
-//            coberturaExistente.setProducaoId(novaCobertura.getProducaoId());
-//            return ResponseEntity.ok(repository.save(coberturaExistente));
-//        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cobertura não encontrada"));
-//    }
+    @PutMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody CoberturaModel novaCobertura) {
+        return repository.findById(id)
+                .<ResponseEntity<Object>>map(coberturaExistente -> {
+                    coberturaExistente.setFotos(novaCobertura.getFotos());
+                    coberturaExistente.setProducao(novaCobertura.getProducao());
+                    return ResponseEntity.ok(repository.save(coberturaExistente));
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cobertura não encontrada"));
+    }
+
 
     // DELETE - Excluir
     @DeleteMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
