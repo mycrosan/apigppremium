@@ -1,6 +1,7 @@
 package br.compneusgppremium.api.controller.model;
 
 import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -22,6 +23,10 @@ public class ColaModel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusCola status = StatusCola.Aguardando;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private UsuarioModel usuario; // Novo campo para armazenar o usuário logado
 
     public enum StatusCola {
         Aguardando,

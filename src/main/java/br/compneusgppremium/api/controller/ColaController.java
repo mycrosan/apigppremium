@@ -3,10 +3,13 @@ package br.compneusgppremium.api.controller;
 import br.compneusgppremium.api.controller.model.CoberturaModel;
 import br.compneusgppremium.api.controller.model.ColaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
+import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.CarcacaRepository;
 import br.compneusgppremium.api.repository.ColaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
+import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.ApiError;
+import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +28,30 @@ public class ColaController {
     @Autowired
     private ProducaoRepository producaoRepository;
 
+    @Autowired
+    private UsuarioLogadoUtil usuarioLogadoUtil;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     // POST - Criar Cola
     @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> salvar(@RequestBody ColaModel cola) {
         try {
-            // Verifica se a produção existe pelo ID vindo no JSON
+            // Verifica se a produção existe
             Optional<ProducaoModel> producaoOptional = producaoRepository.findById(cola.getProducao().getId());
             if (producaoOptional.isEmpty()) {
                 return ResponseEntity.badRequest().body("Produção não encontrada.");
             }
 
-            // Associa a produção existente
+            // Associa produção existente
             cola.setProducao(producaoOptional.get());
+
+            // Pega usuário logado
+            Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
+            UsuarioModel usuario = usuarioRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            cola.setUsuario(usuario);
 
             // Salva no banco
             ColaModel saved = colaRepository.save(cola);
@@ -48,8 +63,6 @@ public class ColaController {
                     .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao salvar cola", ex, ex.getMessage()));
         }
     }
-
-
     // GET - Listar todas
     @GetMapping(produces = "application/json; charset=UTF-8")
     public Object listar() {
@@ -68,6 +81,7 @@ public class ColaController {
 //                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cola não encontrada"));
 //    }
 //
+    // PUT - Atualizar Cola
     @Transactional
     @PutMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody ColaModel novaCola) {
@@ -78,19 +92,26 @@ public class ColaController {
 
         ColaModel colaExistente = optionalCola.get();
 
-        // Atualiza dataInicio para o momento atual
+        // Atualiza dataInicio
         colaExistente.setDataInicio(LocalDateTime.now());
 
-        // Atualiza status se vier no corpo (opcional)
+        // Atualiza status, se enviado
         if (novaCola.getStatus() != null) {
             colaExistente.setStatus(novaCola.getStatus());
         }
+
+        // Atualiza responsável
+        Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
+        UsuarioModel usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        colaExistente.setUsuario(usuario);
 
         colaRepository.save(colaExistente);
 
         return ResponseEntity.ok(colaExistente);
     }
-//
+
+    //
 //    // DELETE - Excluir
 //    @DeleteMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
 //    public ResponseEntity<Object> deletar(@PathVariable("id") Integer id) {

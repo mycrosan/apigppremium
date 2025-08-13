@@ -25,4 +25,8 @@ public class CoberturaModel {
     @JoinColumn(name = "producao_id", nullable = false)
     private ProducaoModel producao;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UsuarioModel usuario;
+
 }

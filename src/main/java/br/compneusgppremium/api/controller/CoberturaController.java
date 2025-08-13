@@ -4,10 +4,13 @@ import br.compneusgppremium.api.controller.dto.ColaComStatusDTO;
 import br.compneusgppremium.api.controller.model.CoberturaModel;
 import br.compneusgppremium.api.controller.model.ColaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
+import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.CoberturaRepository;
 import br.compneusgppremium.api.repository.ColaRepository;
 import br.compneusgppremium.api.repository.ProducaoRepository;
+import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.ApiError;
+import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,12 @@ public class CoberturaController {
     @Autowired
     private ColaRepository colaRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioLogadoUtil usuarioLogadoUtil;
+
     @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> salvar(@RequestBody CoberturaModel cobertura) {
         try {
@@ -38,6 +47,12 @@ public class CoberturaController {
             }
             ProducaoModel producao = producaoOptional.get();
 
+            // 🔹 Verifica se já existe cobertura para essa produção
+            Optional<CoberturaModel> coberturaExistente = repository.findByProducaoId(producao.getId());
+            if (coberturaExistente.isPresent()) {
+                return ResponseEntity.badRequest().body("Este pneu já possui cobertura cadastrada.");
+            }
+
             // Busca cola válida para essa produção
             Optional<ColaModel> colaOpt = colaRepository.findByProducao(producao);
             if (colaOpt.isEmpty()) {
@@ -46,7 +61,7 @@ public class CoberturaController {
 
             ColaModel cola = colaOpt.get();
 
-            // Verifica status e validade (exemplo 120 minutos)
+            // Verifica status e validade
             LocalDateTime inicio = cola.getDataInicio();
             if (cola.getStatus() == ColaModel.StatusCola.Vencido ||
                     inicio == null ||
@@ -56,6 +71,12 @@ public class CoberturaController {
 
             cobertura.setProducao(producao);
             cobertura.setDtCreate(new Date());
+
+            // Define usuário logado como criador
+            Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
+            UsuarioModel usuario = usuarioRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            cobertura.setUsuario(usuario);
 
             CoberturaModel saved = repository.save(cobertura);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -71,6 +92,7 @@ public class CoberturaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
         }
     }
+
 
 
 
@@ -144,26 +166,42 @@ public class CoberturaController {
 
             ColaModel cola = colaOpt.orElse(null);
             ProducaoModel producao = producaoOpt.orElse(null);
+            CoberturaModel coberturaExistente = null;
 
             boolean colaValida = false;
             String mensagem = "Cola não encontrada";
 
+            // Verifica se já existe cobertura para essa produção, somente se producao existir
+            if (producao != null) {
+                Optional<CoberturaModel> coberturaOpt = repository.findByProducaoId(producao.getId());
+                if (coberturaOpt.isPresent()) {
+                    coberturaExistente = coberturaOpt.get();
+                    mensagem = "Cobertura já cadastrada para este pneu.";
+                }
+            }
+
             if (cola != null) {
-                // Verifica validade da cola
                 LocalDateTime inicio = cola.getDataInicio();
 
-                boolean dentroDoTempo = inicio != null && inicio.plusMinutes(120).isAfter(LocalDateTime.now());
+                boolean passouMinimo = inicio != null && inicio.plusMinutes(20).isBefore(LocalDateTime.now());
+                boolean antesMaximo = inicio != null && inicio.plusMinutes(120).isAfter(LocalDateTime.now());
 
                 if ((cola.getStatus() == ColaModel.StatusCola.Aguardando || cola.getStatus() == ColaModel.StatusCola.Pronto)
-                        && dentroDoTempo) {
+                        && passouMinimo && antesMaximo) {
                     colaValida = true;
-                    mensagem = "Cola válida para cobertura";
+                    // Se não havia mensagem de cobertura, mantém a mensagem padrão
+                    if (mensagem.equals("Cola não encontrada")) {
+                        mensagem = "Cola válida para cobertura";
+                    }
                 } else {
-                    mensagem = "Cola vencida ou inválida para cobertura";
+                    if (mensagem.equals("Cola não encontrada")) {
+                        mensagem = "Cola vencida ou inválida para cobertura";
+                    }
                 }
             }
 
             ColaComStatusDTO dto = new ColaComStatusDTO(cola, producao, colaValida, mensagem);
+            dto.setCobertura(coberturaExistente);  // Adicione este método no DTO para setar a cobertura
 
             return ResponseEntity.ok(dto);
 
@@ -173,5 +211,6 @@ public class CoberturaController {
                     .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar por etiqueta", ex, ex.getMessage()));
         }
     }
+
 
 }
