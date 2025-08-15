@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,19 +93,28 @@ public class CoberturaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
         }
     }
-
-
-
-
-    // GET - Buscar todas
+    // GET - Buscar todas as colas sem cobertura
     @GetMapping(produces = "application/json; charset=UTF-8")
-    public Object listar() {
+    public ResponseEntity<?> listar() { // O tipo de retorno agora é ResponseEntity
         try {
-            return repository.findAll();
+            // Busca a lista no repositório
+            List<ColaModel> colas = colaRepository.findColasSemCobertura();
+
+            // Retorna a lista no corpo da resposta com status 200 OK
+            return ResponseEntity.ok(colas);
+
         } catch (Exception ex) {
-            return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao listar coberturas", ex, ex.getMessage());
+            // Cria o objeto de erro padronizado
+            ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao listar colas sem cobertura", ex, ex.getMessage());
+
+            // Retorna o objeto de erro no corpo com o status 500 INTERNAL_SERVER_ERROR
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(apiError);
         }
     }
+
 
     // GET - Buscar cobertura por ID
     @GetMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
@@ -171,37 +181,34 @@ public class CoberturaController {
             boolean colaValida = false;
             String mensagem = "Cola não encontrada";
 
-            // Verifica se já existe cobertura para essa produção, somente se producao existir
+            // Verifica se já existe cobertura para esta produção
             if (producao != null) {
                 Optional<CoberturaModel> coberturaOpt = repository.findByProducaoId(producao.getId());
                 if (coberturaOpt.isPresent()) {
                     coberturaExistente = coberturaOpt.get();
+                    // Se já houver cobertura, não permite atualização
                     mensagem = "Cobertura já cadastrada para este pneu.";
+                    colaValida = false; // impede qualquer processamento posterior
                 }
             }
 
-            if (cola != null) {
+            // Só valida a cola se não houver cobertura
+            if (cola != null && coberturaExistente == null) {
                 LocalDateTime inicio = cola.getDataInicio();
-
                 boolean passouMinimo = inicio != null && inicio.plusMinutes(20).isBefore(LocalDateTime.now());
                 boolean antesMaximo = inicio != null && inicio.plusMinutes(120).isAfter(LocalDateTime.now());
 
                 if ((cola.getStatus() == ColaModel.StatusCola.Aguardando || cola.getStatus() == ColaModel.StatusCola.Pronto)
                         && passouMinimo && antesMaximo) {
                     colaValida = true;
-                    // Se não havia mensagem de cobertura, mantém a mensagem padrão
-                    if (mensagem.equals("Cola não encontrada")) {
-                        mensagem = "Cola válida para cobertura";
-                    }
+                    mensagem = "Cola válida para cobertura";
                 } else {
-                    if (mensagem.equals("Cola não encontrada")) {
-                        mensagem = "Cola vencida ou inválida para cobertura";
-                    }
+                    mensagem = "Cola vencida ou inválida para cobertura";
                 }
             }
 
             ColaComStatusDTO dto = new ColaComStatusDTO(cola, producao, colaValida, mensagem);
-            dto.setCobertura(coberturaExistente);  // Adicione este método no DTO para setar a cobertura
+            dto.setCobertura(coberturaExistente);
 
             return ResponseEntity.ok(dto);
 
@@ -211,6 +218,5 @@ public class CoberturaController {
                     .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar por etiqueta", ex, ex.getMessage()));
         }
     }
-
 
 }

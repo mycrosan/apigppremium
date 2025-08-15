@@ -1,13 +1,10 @@
 package br.compneusgppremium.api.controller;
 
-import br.compneusgppremium.api.controller.model.CoberturaModel;
+import br.compneusgppremium.api.controller.dto.ColaComStatusDTO;
 import br.compneusgppremium.api.controller.model.ColaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
 import br.compneusgppremium.api.controller.model.UsuarioModel;
-import br.compneusgppremium.api.repository.CarcacaRepository;
-import br.compneusgppremium.api.repository.ColaRepository;
-import br.compneusgppremium.api.repository.ProducaoRepository;
-import br.compneusgppremium.api.repository.UsuarioRepository;
+import br.compneusgppremium.api.repository.*;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -32,44 +31,67 @@ public class ColaController {
     private UsuarioLogadoUtil usuarioLogadoUtil;
 
     @Autowired
+    private CoberturaRepository coberturaRepository;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
+
 
     // POST - Criar Cola
     @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> salvar(@RequestBody ColaModel cola) {
         try {
-            // Verifica se a produção existe
             Optional<ProducaoModel> producaoOptional = producaoRepository.findById(cola.getProducao().getId());
             if (producaoOptional.isEmpty()) {
-                return ResponseEntity.badRequest().body("Produção não encontrada.");
+                return ResponseEntity.badRequest().body(Map.of("mensagem", "Produção não encontrada."));
             }
 
-            // Associa produção existente
-            cola.setProducao(producaoOptional.get());
+            ProducaoModel producao = producaoOptional.get();
 
-            // Pega usuário logado
+            // Verifica se já existe cobertura para esse pneu
+            if (coberturaRepository.existsByProducaoId(producao.getId())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu."));
+            }
+
+            cola.setProducao(producao);
+
             Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
             UsuarioModel usuario = usuarioRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
             cola.setUsuario(usuario);
 
-            // Salva no banco
             ColaModel saved = colaRepository.save(cola);
-            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of("mensagem", "Cola cadastrada com sucesso!", "dados", saved));
 
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao salvar cola", ex, ex.getMessage()));
+                    .body(Map.of("mensagem", "Erro ao salvar cola"));
         }
     }
+
+
     // GET - Listar todas
     @GetMapping(produces = "application/json; charset=UTF-8")
-    public Object listar() {
+    public ResponseEntity<?> listar() { // O tipo de retorno agora é ResponseEntity
         try {
-            return colaRepository.findAll();
+            // Busca a lista no repositório
+            List<ColaModel> colas = colaRepository.findColasSemCobertura();
+
+            // Retorna a lista no corpo da resposta com status 200 OK
+            return ResponseEntity.ok(colas);
+
         } catch (Exception ex) {
-            return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao listar colas", ex, ex.getMessage());
+            // Cria o objeto de erro padronizado
+            ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao listar colas sem cobertura", ex, ex.getMessage());
+
+            // Retorna o objeto de erro no corpo com o status 500 INTERNAL_SERVER_ERROR
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(apiError);
         }
     }
 
@@ -84,32 +106,47 @@ public class ColaController {
     // PUT - Atualizar Cola
     @Transactional
     @PutMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody ColaModel novaCola) {
-        Optional<ColaModel> optionalCola = colaRepository.findById(id);
-        if (optionalCola.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cola não encontrada");
+    public ResponseEntity<?> atualizar(@PathVariable("id") Integer id, @RequestBody ColaModel novaCola) {
+        try {
+            Optional<ColaModel> optionalCola = colaRepository.findById(id);
+            if (optionalCola.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("mensagem", "Cola não encontrada."));
+            }
+
+            ColaModel colaExistente = optionalCola.get();
+
+            // Valida se já existe cobertura para a produção dessa cola
+            if (coberturaRepository.existsByProducaoId(colaExistente.getProducao().getId())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu."));
+            }
+
+            // Atualiza dataInicio
+            colaExistente.setDataInicio(LocalDateTime.now());
+
+            // Atualiza status, se enviado
+            if (novaCola.getStatus() != null) {
+                colaExistente.setStatus(novaCola.getStatus());
+            }
+
+            // Atualiza responsável
+            Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
+            UsuarioModel usuario = usuarioRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            colaExistente.setUsuario(usuario);
+
+            ColaModel atualizado = colaRepository.save(colaExistente);
+
+            return ResponseEntity.ok(Map.of("mensagem", "Cola atualizada com sucesso!", "dados", atualizado));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("mensagem", "Erro ao atualizar cola"));
         }
-
-        ColaModel colaExistente = optionalCola.get();
-
-        // Atualiza dataInicio
-        colaExistente.setDataInicio(LocalDateTime.now());
-
-        // Atualiza status, se enviado
-        if (novaCola.getStatus() != null) {
-            colaExistente.setStatus(novaCola.getStatus());
-        }
-
-        // Atualiza responsável
-        Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
-        UsuarioModel usuario = usuarioRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        colaExistente.setUsuario(usuario);
-
-        colaRepository.save(colaExistente);
-
-        return ResponseEntity.ok(colaExistente);
     }
+
 
     //
 //    // DELETE - Excluir
@@ -136,24 +173,44 @@ public class ColaController {
 //        }
 //    }
     @GetMapping(path = "/etiqueta/{etiqueta}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> buscarPorEtiqueta(@PathVariable("etiqueta") String etiqueta) {
+    public ResponseEntity<?> buscarPorEtiqueta(@PathVariable("etiqueta") String etiqueta) {
         try {
             Optional<ColaModel> cola = colaRepository.findByEtiqueta(etiqueta);
 
             if (cola.isPresent()) {
-                return ResponseEntity.ok(cola.get());
+                ColaModel colaModel = cola.get();
+
+                // Verifica se já existe cobertura para essa produção
+                if (coberturaRepository.existsByProducaoId(colaModel.getProducao().getId())) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu.", "dados", colaModel));
+                }
+
+                return ResponseEntity.ok(Map.of("mensagem", "Cola encontrada com sucesso!", "dados", colaModel));
             } else {
                 Optional<ProducaoModel> producao = producaoRepository.findByEtiqueta(etiqueta);
-                return producao
-                        .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                .body("Nenhuma cola ou produção encontrada para a etiqueta"));
+
+                if (producao.isPresent()) {
+                    ProducaoModel producaoModel = producao.get();
+
+                    // Verifica se já existe cobertura para essa produção
+                    if (coberturaRepository.existsByProducaoId(producaoModel.getId())) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu.", "dados", producaoModel));
+                    }
+
+                    return ResponseEntity.ok(Map.of("mensagem", "Produção encontrada, pronta para criar cola.", "dados", producaoModel));
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("mensagem", "Etiqueta não encontrada."));
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar por etiqueta", ex, ex.getMessage()));
+                    .body(Map.of("mensagem", "Erro ao buscar por etiqueta " + ex.getMessage()));
         }
     }
+
 
 }

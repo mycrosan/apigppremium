@@ -5,7 +5,8 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "cola")
+@Entity
+@Table(name = "cola")
 @Data
 public class ColaModel {
 

@@ -12,5 +12,6 @@ public interface CoberturaRepository extends JpaRepository<CoberturaModel, Integ
     @Query("SELECT c FROM CoberturaModel c JOIN c.producao p JOIN p.carcaca ca WHERE ca.numero_etiqueta = :etiqueta")
     Optional<CoberturaModel> findByEtiqueta(String etiqueta);
 
+    boolean existsByProducaoId(Integer producaoId);
 
 }
