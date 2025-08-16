@@ -3,19 +3,26 @@ package br.compneusgppremium.api.controller.dto;
 import br.compneusgppremium.api.controller.model.CoberturaModel;
 import br.compneusgppremium.api.controller.model.ColaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
+import br.compneusgppremium.api.controller.model.UsuarioModel;
 
 public class ColaComStatusDTO {
     private ColaModel cola;
     private ProducaoModel producao;
     private boolean colaValida;
     private String mensagem;
-    private CoberturaModel cobertura;  // novo campo
+    private CoberturaModel cobertura;
+    private UsuarioModel usuario;   // 👈 aqui sim
 
-    public ColaComStatusDTO(ColaModel cola, ProducaoModel producao, boolean colaValida, String mensagem) {
+    public ColaComStatusDTO(ColaModel cola,
+                            ProducaoModel producao,
+                            boolean colaValida,
+                            String mensagem,
+                            UsuarioModel usuarioLogado) {
         this.cola = cola;
         this.producao = producao;
         this.colaValida = colaValida;
         this.mensagem = mensagem;
+        this.usuario = usuarioLogado;
     }
 
     // getters e setters
@@ -34,4 +41,7 @@ public class ColaComStatusDTO {
 
     public CoberturaModel getCobertura() { return cobertura; }
     public void setCobertura(CoberturaModel cobertura) { this.cobertura = cobertura; }
+
+    public UsuarioModel getUsuario() { return usuario; }   // ✅ corrigido
+    public void setUsuario(UsuarioModel usuario) { this.usuario = usuario; } // ✅ corrigido
 }

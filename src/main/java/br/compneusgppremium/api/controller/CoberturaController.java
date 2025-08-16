@@ -207,7 +207,12 @@ public class CoberturaController {
                 }
             }
 
-            ColaComStatusDTO dto = new ColaComStatusDTO(cola, producao, colaValida, mensagem);
+            // Atualiza responsável
+            Long userId = usuarioLogadoUtil.getUsuarioIdLogado();
+            UsuarioModel usuario = usuarioRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            ColaComStatusDTO dto = new ColaComStatusDTO(cola, producao, colaValida, mensagem, usuario);
             dto.setCobertura(coberturaExistente);
 
             return ResponseEntity.ok(dto);
