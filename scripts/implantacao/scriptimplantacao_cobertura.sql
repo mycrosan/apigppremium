@@ -1,32 +1,14 @@
--- MySQL Workbench Synchronization
--- Generated: 2025-08-05 23:37
--- Model: New Model
--- Version: 1.0
--- Project: Name of the project
--- Author: my
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
-CREATE TABLE IF NOT EXISTS `gppremium`.`cobertura` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `fotos` JSON NULL DEFAULT NULL,
-  `producao_id` INT(11) NOT NULL,
-  `dt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `dt_update` DATETIME NULL DEFAULT NULL,
-  `dt_delete` DATETIME NULL DEFAULT NULL,
+CREATE TABLE `cobertura` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `fotos` json DEFAULT NULL,
+  `producao_id` int NOT NULL,
+  `dt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `dt_update` datetime DEFAULT NULL,
+  `dt_delete` datetime DEFAULT NULL,
+  `usuario_id` int NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_cobertura_producao1_idx` (`producao_id` ASC) VISIBLE,
-  CONSTRAINT `fk_cobertura_producao1`
-    FOREIGN KEY (`producao_id`)
-    REFERENCES `gppremium`.`producao` (`id`))
-ENGINE = InnoDB
-AUTO_INCREMENT = 18
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+  KEY `fk_cobertura_producao1_idx` (`producao_id`),
+  KEY `fk_cobertura_usuario1_idx` (`usuario_id`),
+  CONSTRAINT `fk_cobertura_producao1` FOREIGN KEY (`producao_id`) REFERENCES `producao` (`id`),
+  CONSTRAINT `fk_cobertura_usuario1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
