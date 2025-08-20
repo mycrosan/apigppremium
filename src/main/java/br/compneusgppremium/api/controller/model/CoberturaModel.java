@@ -1,9 +1,9 @@
 package br.compneusgppremium.api.controller.model;
 
 import lombok.Data;
+
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cobertura")
@@ -14,19 +14,20 @@ public class CoberturaModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String fotos;
+    @Column(columnDefinition = "json")
+    private String fotos; // pode mapear como String, depois converter
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dtCreate;
+    @Column(name = "dt_create", insertable = false, updatable = false)
+    private LocalDateTime dtCreate;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "producao_id", nullable = false)
-    private ProducaoModel producao;
+    @Column(name = "dt_update")
+    private LocalDateTime dtUpdate;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private UsuarioModel usuario;
 
+    @ManyToOne
+    @JoinColumn(name = "cola_id", nullable = false)
+    private ColaModel cola;
 }

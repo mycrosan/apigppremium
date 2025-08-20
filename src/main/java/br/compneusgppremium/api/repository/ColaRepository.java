@@ -1,10 +1,7 @@
 package br.compneusgppremium.api.repository;
 
-// Sugestão: Mova suas entidades para um pacote 'entity' ou 'model' dedicado.
-// Ex: import br.compneusgppremium.api.entity.ColaModel;
 import br.compneusgppremium.api.controller.model.ColaModel;
 import br.compneusgppremium.api.controller.model.ProducaoModel;
-import br.compneusgppremium.api.controller.model.CoberturaModel; // Também precisa ser importado para a query
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,7 +27,7 @@ public interface ColaRepository extends JpaRepository<ColaModel, Integer> {
     @Query("SELECT c FROM ColaModel c " +
             "WHERE NOT EXISTS (" +
             "   SELECT 1 FROM CoberturaModel cb " +
-            "   WHERE cb.producao.id = c.producao.id" +
+            "   WHERE cb.cola = c" +
             ")")
     List<ColaModel> findColasSemCobertura();
 

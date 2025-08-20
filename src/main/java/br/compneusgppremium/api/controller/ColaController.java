@@ -49,7 +49,7 @@ public class ColaController {
             ProducaoModel producao = producaoOptional.get();
 
             // Verifica se já existe cobertura para esse pneu
-            if (coberturaRepository.existsByProducaoId(producao.getId())) {
+            if (coberturaRepository.existsByColaProducaoId(producao.getId())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu."));
             }
@@ -117,7 +117,7 @@ public class ColaController {
             ColaModel colaExistente = optionalCola.get();
 
             // Valida se já existe cobertura para a produção dessa cola
-            if (coberturaRepository.existsByProducaoId(colaExistente.getProducao().getId())) {
+            if (coberturaRepository.existsByColaProducaoId(colaExistente.getProducao().getId())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu."));
             }
@@ -181,7 +181,7 @@ public class ColaController {
                 ColaModel colaModel = cola.get();
 
                 // Verifica se já existe cobertura para essa produção
-                if (coberturaRepository.existsByProducaoId(colaModel.getProducao().getId())) {
+                if (coberturaRepository.existsByColaProducaoId(colaModel.getProducao().getId())) {
                     return ResponseEntity.status(HttpStatus.CONFLICT)
                             .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu.", "dados", colaModel));
                 }
@@ -194,7 +194,7 @@ public class ColaController {
                     ProducaoModel producaoModel = producao.get();
 
                     // Verifica se já existe cobertura para essa produção
-                    if (coberturaRepository.existsByProducaoId(producaoModel.getId())) {
+                    if (coberturaRepository.existsByColaProducaoId(producaoModel.getId())) {
                         return ResponseEntity.status(HttpStatus.CONFLICT)
                                 .body(Map.of("mensagem", "Já existe cobertura cadastrada para esse pneu.", "dados", producaoModel));
                     }
@@ -211,6 +211,7 @@ public class ColaController {
                     .body(Map.of("mensagem", "Erro ao buscar por etiqueta " + ex.getMessage()));
         }
     }
+
 
 
 }
