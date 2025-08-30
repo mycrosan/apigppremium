@@ -1,5 +1,5 @@
 package br.compneusgppremium.api.domain;
-
+//ajuste
 public enum ResumoEntidade {
     COBERTURA("cobertura", "dt_create"),
     QUALIDADE("controle_qualidade", "dt_create"),
