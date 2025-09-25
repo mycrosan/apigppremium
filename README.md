@@ -4,9 +4,6 @@ App para gestão de carcaças
 # Descrição
 Sistema Exclusivo GP Premium
 
-## Build
-flutter build appbundle
-
 ### Commit type	Emoji
 
 - Initial commit	🎉 :tada:
@@ -59,6 +56,24 @@ COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 java     **12345**  you   ...  TCP  ...    LISTEN    ...
 - kill -9 12345
 ## sdk default java 11.0.17-tem
+
+mvn install
+
+-- Criar usuário
+CREATE USER 'monty'@'%' IDENTIFIED BY 'some_pass';
+
+-- Criar o banco (se ainda não existir)
+CREATE DATABASE IF NOT EXISTS sislife CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Conceder privilégios totais no banco para o usuário
+GRANT ALL PRIVILEGES ON sislife.* TO 'monty'@'%';
+
+-- Atualizar privilégios
+FLUSH PRIVILEGES;
+
+sdk use java 11.0.24-tem
+
+
 
 
 
