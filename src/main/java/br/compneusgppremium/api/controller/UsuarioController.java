@@ -4,6 +4,7 @@ import br.compneusgppremium.api.controller.model.PerfilModel;
 import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.PerfilRepository;
 import br.compneusgppremium.api.repository.UsuarioRepository;
+import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,11 +28,27 @@ public class UsuarioController {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Autowired
+    private UsuarioLogadoUtil usuarioLogadoUtil;
+
     @GetMapping
     public List<UsuarioModel> findAll() {
         List<UsuarioModel> usuarios = new ArrayList<>();
         repository.findAll().forEach(usuarios::add);
         return usuarios;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioModel> obterUsuarioLogado() {
+        try {
+            Long usuarioId = usuarioLogadoUtil.getUsuarioIdLogado();
+            Optional<UsuarioModel> usuarioOpt = repository.findById(usuarioId);
+            return usuarioOpt
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).build(); // Unauthorized
+        }
     }
 
     @GetMapping("/{id}")
