@@ -7,6 +7,14 @@ import br.compneusgppremium.api.repository.ProducaoRepository;
 import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +28,8 @@ import java.util.*;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @RestController
+@Tag(name = "Produção", description = "Operações relacionadas ao controle de produção")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ProducaoController {
 
     @Autowired
@@ -38,6 +48,24 @@ public class ProducaoController {
     EntityManager entityManager;
 
     @GetMapping(path = "/api/producao")
+    @Operation(
+        summary = "Listar produções",
+        description = "Retorna uma lista das últimas 100 produções ordenadas por data de criação"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Lista de produções retornada com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ProducaoDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
     public List<ProducaoDTO> findAll() {
         var sql = "SELECT p FROM producao p ORDER BY p.dt_create DESC";
         List<ProducaoModel> producoes = entityManager.createQuery(sql, ProducaoModel.class)
@@ -62,7 +90,32 @@ public class ProducaoController {
     }
 
     @GetMapping(path = "/api/producao/{id}")
-    public ResponseEntity<?> consultar(@PathVariable("id") Integer id) {
+    @Operation(
+        summary = "Consultar produção por ID",
+        description = "Retorna os detalhes de uma produção específica pelo seu ID"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Produção encontrada",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ProducaoDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Produção não encontrada"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<?> consultar(
+        @Parameter(description = "ID da produção", required = true, example = "1")
+        @PathVariable("id") Integer id
+    ) {
         return producaoRepository.findById(id)
                 .map(record -> {
                     ProducaoModel p = record;
@@ -82,7 +135,36 @@ public class ProducaoController {
     }
 
     @PostMapping(produces = "application/json; charset=UTF-8", path = "/api/producao")
-    public Object salvar(@RequestBody ProducaoModel producao) {
+    @Operation(
+        summary = "Criar nova produção",
+        description = "Cria uma nova produção e atualiza o status da carcaça para 'in_production'"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Produção criada com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ProducaoModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Dados inválidos ou carcaça já produzida",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ApiError.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public Object salvar(
+        @Parameter(description = "Dados da produção", required = true)
+        @RequestBody ProducaoModel producao
+    ) {
         var statusCarcaca = new StatusCarcacaModel();
         statusCarcaca.setId(2);
 
@@ -123,7 +205,34 @@ public class ProducaoController {
     }
 
     @PutMapping(path = "/api/producao/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable("id") Integer id, @RequestBody ProducaoModel producao) {
+    @Operation(
+        summary = "Atualizar produção",
+        description = "Atualiza os dados de uma produção existente"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Produção atualizada com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ProducaoModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Produção não encontrada"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<?> atualizar(
+        @Parameter(description = "ID da produção", required = true, example = "1")
+        @PathVariable("id") Integer id,
+        @Parameter(description = "Dados atualizados da produção", required = true)
+        @RequestBody ProducaoModel producao
+    ) {
         return producaoRepository.findById(id)
                 .map(record -> {
                     record.setCarcaca(producao.getCarcaca());
@@ -135,7 +244,28 @@ public class ProducaoController {
     }
 
     @DeleteMapping(path = "/api/producao/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id) {
+    @Operation(
+        summary = "Excluir produção",
+        description = "Exclui uma produção e retorna o status da carcaça para 'start'"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Produção excluída com sucesso"
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Produção não encontrada"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<?> delete(
+        @Parameter(description = "ID da produção", required = true, example = "1")
+        @PathVariable("id") Integer id
+    ) {
         return producaoRepository.findById(id)
                 .map(record -> {
                     carcacaRepository.findById(record.getCarcaca().getId())
@@ -150,12 +280,40 @@ public class ProducaoController {
     }
 
     @GetMapping(path = "/api/producao/pesquisa")
+    @Operation(
+        summary = "Pesquisar produções",
+        description = "Pesquisa produções com base em filtros opcionais como modelo, marca, medida, país e número da etiqueta"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Pesquisa realizada com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ProducaoDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Erro interno do servidor"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
     public ResponseEntity<?> consultarProducao(
-            @RequestParam(required = false) String modeloId,
-            @RequestParam(required = false) String marcaId,
-            @RequestParam(required = false) String medidaId,
-            @RequestParam(required = false) String paisId,
-            @RequestParam(required = false) String numeroEtiqueta) {
+        @Parameter(description = "ID do modelo", example = "1")
+        @RequestParam(required = false) String modeloId,
+        @Parameter(description = "ID da marca", example = "1")
+        @RequestParam(required = false) String marcaId,
+        @Parameter(description = "ID da medida", example = "1")
+        @RequestParam(required = false) String medidaId,
+        @Parameter(description = "ID do país", example = "1")
+        @RequestParam(required = false) String paisId,
+        @Parameter(description = "Número da etiqueta", example = "ET001")
+        @RequestParam(required = false) String numeroEtiqueta
+    ) {
 
         StringBuilder sql = new StringBuilder("SELECT pro FROM producao pro WHERE 1 = 1");
         Map<String, Object> parametros = new HashMap<>();

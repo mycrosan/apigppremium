@@ -73,6 +73,8 @@ FLUSH PRIVILEGES;
 
 sdk use java 11.0.24-tem
 
+http://localhost:8080/swagger-ui/index.html
+
 
 
 

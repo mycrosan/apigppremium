@@ -6,6 +6,12 @@ import br.compneusgppremium.api.repository.ProducaoRepository;
 import br.compneusgppremium.api.repository.QualidadeRepository;
 import br.compneusgppremium.api.util.ApiError;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +25,8 @@ import java.util.Date;
 
 
 @RestController
+@Tag(name = "Qualidade", description = "Operações relacionadas ao controle de qualidade de pneus")
+@SecurityRequirement(name = "Bearer Authentication")
 public class QualidadeController {
 
     @Autowired
@@ -40,6 +48,11 @@ public class QualidadeController {
 //        it.forEach(e -> qualidades.add(e));
 //        return qualidades;
 //    }
+    @Operation(summary = "Listar controles de qualidade", description = "Retorna os últimos 100 controles de qualidade ordenados por data de criação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de controles de qualidade retornada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(path = "/api/qualidade")
     public Object findAll() {
         var sql = "SELECT cq FROM controle_qualidade cq ORDER BY cq.dt_create DESC";
@@ -51,15 +64,25 @@ public class QualidadeController {
         }
     }
 
+    @Operation(summary = "Consultar controle de qualidade por ID", description = "Retorna um controle de qualidade específico pelo seu ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Controle de qualidade encontrado"),
+            @ApiResponse(responseCode = "404", description = "Controle de qualidade não encontrado")
+    })
     @GetMapping(path = "/api/qualidade/{id}")
-    public ResponseEntity consultar(@PathVariable("id") Integer id) {
+    public ResponseEntity consultar(@Parameter(description = "ID do controle de qualidade") @PathVariable("id") Integer id) {
         return qualidadeRepository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Atualizar controle de qualidade", description = "Atualiza um controle de qualidade existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Controle de qualidade atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Controle de qualidade não encontrado")
+    })
     @PutMapping(path = "/api/qualidade/{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Integer id, @RequestBody QualidadeModel qualidade) {
+    public ResponseEntity atualizar(@Parameter(description = "ID do controle de qualidade") @PathVariable("id") Integer id, @RequestBody QualidadeModel qualidade) {
         return qualidadeRepository.findById(id)
                 .map(record -> {
                     record.setProducao(qualidade.getProducao());
@@ -70,6 +93,12 @@ public class QualidadeController {
                 }).orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Criar controle de qualidade", description = "Cria um novo controle de qualidade")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Controle de qualidade criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping(path = "/api/qualidade")
     public Object salvar(@RequestBody QualidadeModel qualidade) {
 
@@ -105,8 +134,13 @@ public class QualidadeController {
     }
 
 
+    @Operation(summary = "Excluir controle de qualidade", description = "Exclui um controle de qualidade pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Controle de qualidade excluído com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Controle de qualidade não encontrado")
+    })
     @DeleteMapping(path = "/api/qualidade/{id}")
-    public Object delete(@PathVariable("id") Integer id) {
+    public Object delete(@Parameter(description = "ID do controle de qualidade") @PathVariable("id") Integer id) {
         try {
             return qualidadeRepository.findById(id)
                     .map(record -> {
@@ -119,8 +153,14 @@ public class QualidadeController {
             return apiError;
         }
     }
+    @Operation(summary = "Consultar pneu por etiqueta", description = "Consulta informações de um pneu específico pela etiqueta")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pneu encontrado"),
+            @ApiResponse(responseCode = "404", description = "Pneu não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(produces = "application/json; charset=UTF-8", path = "/api/qualidade/pesquisa/{etiqueta}")
-    public Object consultarPneu(@PathVariable("etiqueta") String etiqueta) {
+    public Object consultarPneu(@Parameter(description = "Etiqueta do pneu") @PathVariable("etiqueta") String etiqueta) {
         try {
             var retornoConsulta = qualidadeRepository.findByEtiqueta(etiqueta);
             if (retornoConsulta.size() > 1) {

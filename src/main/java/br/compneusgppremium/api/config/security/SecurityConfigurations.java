@@ -63,8 +63,8 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     // Configurações de recursos estáticos
     @Override
     public void configure(WebSecurity web) throws Exception {
-        // Se quiser liberar Swagger, por exemplo:
-        // web.ignoring().antMatchers("/swagger-ui/**", "/v3/api-docs/**");
+        // Liberando acesso ao Swagger
+        web.ignoring().antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
     }
 
     @Bean

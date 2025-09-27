@@ -11,6 +11,12 @@ import br.compneusgppremium.api.repository.ProducaoRepository;
 import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +29,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cobertura")
+@Tag(name = "Cobertura", description = "Operações relacionadas ao controle de cobertura de pneus")
+@SecurityRequirement(name = "Bearer Authentication")
 public class CoberturaController {
 
     @Autowired
@@ -40,7 +48,12 @@ public class CoberturaController {
     @Autowired
     private UsuarioLogadoUtil usuarioLogadoUtil;
 
-    // POST - Salvar cobertura
+    @Operation(summary = "Criar nova cobertura", description = "Cria uma nova cobertura para uma cola específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cobertura criada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos ou cola vencida"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> salvar(@RequestBody CoberturaModel cobertura) {
         try {
@@ -90,7 +103,11 @@ public class CoberturaController {
         }
     }
 
-    // GET - Buscar todas as colas sem cobertura
+    @Operation(summary = "Listar colas sem cobertura", description = "Retorna todas as colas que ainda não possuem cobertura")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de colas sem cobertura retornada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> listar() {
         try {
@@ -103,17 +120,25 @@ public class CoberturaController {
         }
     }
 
-    // GET - Buscar cobertura por ID
+    @Operation(summary = "Buscar cobertura por ID", description = "Retorna uma cobertura específica pelo seu ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cobertura encontrada"),
+            @ApiResponse(responseCode = "404", description = "Cobertura não encontrada")
+    })
     @GetMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> buscarPorId(@PathVariable("id") Integer id) {
+    public ResponseEntity<Object> buscarPorId(@Parameter(description = "ID da cobertura") @PathVariable("id") Integer id) {
         Optional<CoberturaModel> cobertura = repository.findById(id);
         return cobertura.<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cobertura não encontrada"));
     }
 
-    // PUT - Atualizar
+    @Operation(summary = "Atualizar cobertura", description = "Atualiza uma cobertura existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cobertura atualizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Cobertura não encontrada")
+    })
     @PutMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> atualizar(@PathVariable("id") Integer id, @RequestBody CoberturaModel novaCobertura) {
+    public ResponseEntity<Object> atualizar(@Parameter(description = "ID da cobertura") @PathVariable("id") Integer id, @RequestBody CoberturaModel novaCobertura) {
         return repository.findById(id)
                 .<ResponseEntity<Object>>map(coberturaExistente -> {
                     coberturaExistente.setFotos(novaCobertura.getFotos());
@@ -123,18 +148,27 @@ public class CoberturaController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cobertura não encontrada"));
     }
 
-    // DELETE - Excluir
+    @Operation(summary = "Deletar cobertura", description = "Remove uma cobertura do sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cobertura deletada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Cobertura não encontrada")
+    })
     @DeleteMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> deletar(@PathVariable("id") Integer id) {
+    public ResponseEntity<Object> deletar(@Parameter(description = "ID da cobertura") @PathVariable("id") Integer id) {
         return repository.findById(id).map(cobertura -> {
             repository.deleteById(id);
             return ResponseEntity.ok().build();
         }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cobertura não encontrada"));
     }
 
-    // GET - Buscar por colaId
+    @Operation(summary = "Buscar cobertura por cola", description = "Retorna a cobertura associada a uma cola específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cobertura encontrada"),
+            @ApiResponse(responseCode = "404", description = "Cobertura não encontrada para esta cola"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(path = "/cola/{colaId}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> buscarPorCola(@PathVariable("colaId") Integer colaId) {
+    public ResponseEntity<Object> buscarPorCola(@Parameter(description = "ID da cola") @PathVariable("colaId") Integer colaId) {
         try {
             Optional<CoberturaModel> cobertura = repository.findByColaId(colaId);
             return cobertura.<ResponseEntity<Object>>map(ResponseEntity::ok)
@@ -146,10 +180,14 @@ public class CoberturaController {
         }
     }
 
-    // GET - Buscar por etiqueta
-// GET - Buscar por etiqueta
+    @Operation(summary = "Buscar cobertura por etiqueta", description = "Busca informações de cobertura e validação de cola por etiqueta da produção")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Informações da cobertura retornadas com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Produção não encontrada para a etiqueta"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(path = "/etiqueta/{etiqueta}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> buscarPorEtiqueta(@PathVariable("etiqueta") String etiqueta) {
+    public ResponseEntity<Object> buscarPorEtiqueta(@Parameter(description = "Etiqueta da produção") @PathVariable("etiqueta") String etiqueta) {
         try {
             Optional<ProducaoModel> producaoOpt = producaoRepository.findByEtiqueta(etiqueta);
             if (producaoOpt.isEmpty()) {

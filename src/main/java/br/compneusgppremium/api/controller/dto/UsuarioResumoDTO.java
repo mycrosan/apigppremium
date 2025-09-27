@@ -1,5 +1,6 @@
 package br.compneusgppremium.api.controller.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,9 +11,13 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@Schema(description = "DTO com informações resumidas do usuário")
 public class UsuarioResumoDTO implements UserDetails {
 
+    @Schema(description = "Nome do usuário", example = "João Silva")
     private String nome;
+    
+    @Schema(description = "Login do usuário", example = "joao.silva")
     private String login;
 
     @Override

@@ -7,6 +7,12 @@ import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.*;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +26,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cola")
+@Tag(name = "Cola", description = "Operações relacionadas ao processo de colagem de pneus")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ColaController {
     @Autowired
     private ColaRepository colaRepository;
@@ -37,7 +45,13 @@ public class ColaController {
     private UsuarioRepository usuarioRepository;
 
 
-    // POST - Criar Cola
+    @Operation(summary = "Criar nova cola", description = "Cria uma nova cola para uma produção específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cola criada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Produção não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Já existe cobertura cadastrada para esse pneu"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> salvar(@RequestBody ColaModel cola) {
         try {
@@ -73,7 +87,11 @@ public class ColaController {
     }
 
 
-    // GET - Listar todas
+    @Operation(summary = "Listar colas sem cobertura", description = "Retorna todas as colas que ainda não possuem cobertura")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de colas sem cobertura retornada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> listar() { // O tipo de retorno agora é ResponseEntity
         try {
@@ -103,10 +121,16 @@ public class ColaController {
 //                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cola não encontrada"));
 //    }
 //
-    // PUT - Atualizar Cola
+    @Operation(summary = "Atualizar cola", description = "Atualiza uma cola existente, incluindo data de início e status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cola atualizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Cola não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Já existe cobertura cadastrada para esse pneu"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @Transactional
     @PutMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<?> atualizar(@PathVariable("id") Integer id, @RequestBody ColaModel novaCola) {
+    public ResponseEntity<?> atualizar(@Parameter(description = "ID da cola") @PathVariable("id") Integer id, @RequestBody ColaModel novaCola) {
         try {
             Optional<ColaModel> optionalCola = colaRepository.findById(id);
             if (optionalCola.isEmpty()) {
@@ -172,8 +196,15 @@ public class ColaController {
 //                    .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao buscar por produção", ex, ex.getMessage()));
 //        }
 //    }
+    @Operation(summary = "Buscar cola por etiqueta", description = "Busca cola ou produção por etiqueta para verificar disponibilidade para colagem")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cola ou produção encontrada"),
+            @ApiResponse(responseCode = "404", description = "Etiqueta não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Já existe cobertura cadastrada para esse pneu"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     @GetMapping(path = "/etiqueta/{etiqueta}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<?> buscarPorEtiqueta(@PathVariable("etiqueta") String etiqueta) {
+    public ResponseEntity<?> buscarPorEtiqueta(@Parameter(description = "Etiqueta da produção") @PathVariable("etiqueta") String etiqueta) {
         try {
             Optional<ColaModel> cola = colaRepository.findByEtiqueta(etiqueta);
 

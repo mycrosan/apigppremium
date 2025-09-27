@@ -5,6 +5,14 @@ import br.compneusgppremium.api.controller.model.UsuarioModel;
 import br.compneusgppremium.api.repository.PerfilRepository;
 import br.compneusgppremium.api.repository.UsuarioRepository;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +25,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuario")
+@Tag(name = "Usuários", description = "Operações relacionadas ao gerenciamento de usuários")
+@SecurityRequirement(name = "Bearer Authentication")
 public class UsuarioController {
 
     @Autowired
@@ -32,6 +42,24 @@ public class UsuarioController {
     private UsuarioLogadoUtil usuarioLogadoUtil;
 
     @GetMapping
+    @Operation(
+        summary = "Listar todos os usuários",
+        description = "Retorna uma lista com todos os usuários cadastrados no sistema"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Lista de usuários retornada com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UsuarioModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
     public List<UsuarioModel> findAll() {
         List<UsuarioModel> usuarios = new ArrayList<>();
         repository.findAll().forEach(usuarios::add);
@@ -39,6 +67,28 @@ public class UsuarioController {
     }
 
     @GetMapping("/me")
+    @Operation(
+        summary = "Obter dados do usuário logado",
+        description = "Retorna os dados do usuário atualmente autenticado"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Dados do usuário retornados com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UsuarioModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Usuário não encontrado"
+        )
+    })
     public ResponseEntity<UsuarioModel> obterUsuarioLogado() {
         try {
             Long usuarioId = usuarioLogadoUtil.getUsuarioIdLogado();
@@ -52,7 +102,32 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioModel> consultar(@PathVariable("id") Long id) {
+    @Operation(
+        summary = "Consultar usuário por ID",
+        description = "Retorna os dados de um usuário específico pelo seu ID"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Usuário encontrado",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UsuarioModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Usuário não encontrado"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<UsuarioModel> consultar(
+        @Parameter(description = "ID do usuário", required = true, example = "1")
+        @PathVariable("id") Long id
+    ) {
         Optional<UsuarioModel> usuarioOpt = repository.findById(id);
         return usuarioOpt
                 .map(ResponseEntity::ok)
@@ -60,7 +135,36 @@ public class UsuarioController {
     }
     @PostMapping
     @Transactional
-    public ResponseEntity<?> criarUsuario(@RequestBody UsuarioModel usuarioRequest) {
+    @Operation(
+        summary = "Criar novo usuário",
+        description = "Cria um novo usuário no sistema com validação de login único e criptografia de senha"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Usuário criado com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UsuarioModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Dados inválidos ou login já existe"
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Erro interno do servidor"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<?> criarUsuario(
+        @Parameter(description = "Dados do usuário a ser criado", required = true)
+        @RequestBody UsuarioModel usuarioRequest
+    ) {
         try {
             if (loginJaExiste(usuarioRequest.getLogin())) {
                 return ResponseEntity.badRequest().body("Login já existe!");
@@ -81,7 +185,38 @@ public class UsuarioController {
     }
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> atualizarUsuario(@PathVariable("id") Long id, @RequestBody UsuarioModel usuarioRequest) {
+    @Operation(
+        summary = "Atualizar usuário",
+        description = "Atualiza os dados de um usuário existente, incluindo validação de perfis"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Usuário atualizado com sucesso",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UsuarioModel.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Usuário não encontrado"
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Dados inválidos"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<?> atualizarUsuario(
+        @Parameter(description = "ID do usuário", required = true, example = "1")
+        @PathVariable("id") Long id,
+        @Parameter(description = "Dados atualizados do usuário", required = true)
+        @RequestBody UsuarioModel usuarioRequest
+    ) {
         return repository.findById(id)
                 .map(usuarioExistente -> {
                     // Atualiza os campos
@@ -105,7 +240,28 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @Operation(
+        summary = "Excluir usuário",
+        description = "Remove um usuário do sistema"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Usuário excluído com sucesso"
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Usuário não encontrado"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de autenticação inválido ou expirado"
+        )
+    })
+    public ResponseEntity<?> delete(
+        @Parameter(description = "ID do usuário", required = true, example = "1")
+        @PathVariable("id") Long id
+    ) {
         return repository.findById(id)
                 .map(usuario -> {
                     repository.deleteById(id);

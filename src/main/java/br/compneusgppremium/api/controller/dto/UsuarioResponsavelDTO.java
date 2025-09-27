@@ -1,7 +1,13 @@
 package br.compneusgppremium.api.controller.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "DTO com informações do usuário responsável")
 public class UsuarioResponsavelDTO {
+    @Schema(description = "ID do usuário", example = "1")
     private Long id;
+    
+    @Schema(description = "Nome do usuário", example = "Maria Santos")
     private String nome;
 
     public UsuarioResponsavelDTO(Long id, String nome) {
