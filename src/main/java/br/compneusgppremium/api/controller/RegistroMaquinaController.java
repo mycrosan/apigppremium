@@ -127,7 +127,7 @@ public class RegistroMaquinaController {
             novaMaquina.setNome(dto.getNome());
             novaMaquina.setDescricao(dto.getDescricao());
             novaMaquina.setNumeroSerie(dto.getNumeroSerie());
-            novaMaquina.setStatus(StatusMaquina.ATIVA); // Status padrão
+            novaMaquina.setStatus(StatusMaquina.Ativa); // Status padrão
 
             RegistroMaquinaModel maquinaSalva = registroMaquinaRepository.save(novaMaquina);
             return ResponseEntity.status(HttpStatus.CREATED).body(convertToResponseDTO(maquinaSalva));
@@ -256,7 +256,7 @@ public class RegistroMaquinaController {
     public ResponseEntity<List<RegistroMaquinaResponseDTO>> listarMaquinasAtivas() {
         try {
             List<RegistroMaquinaModel> maquinas = registroMaquinaRepository
-                    .findByStatusAndDtDeleteIsNullOrderByDtCreateDesc(StatusMaquina.ATIVA);
+                    .findByStatusAndDtDeleteIsNullOrderByDtCreateDesc(StatusMaquina.Ativa);
             List<RegistroMaquinaResponseDTO> response = maquinas.stream()
                     .map(this::convertToResponseDTO)
                     .collect(Collectors.toList());
@@ -389,7 +389,7 @@ public class RegistroMaquinaController {
     public ResponseEntity<List<RegistroMaquinaResponseDTO>> listarMaquinasEmManutencao() {
         try {
             List<RegistroMaquinaModel> maquinas = registroMaquinaRepository
-                    .findByStatusAndDtDeleteIsNull(StatusMaquina.MANUTENCAO);
+                    .findByStatusAndDtDeleteIsNull(StatusMaquina.Manutencao);
             List<RegistroMaquinaResponseDTO> response = maquinas.stream()
                     .map(this::convertToResponseDTO)
                     .collect(Collectors.toList());

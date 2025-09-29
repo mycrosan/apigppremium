@@ -1,8 +1,104 @@
-# gp_app
-App para gestão de carcaças
+# 🏭 GP Premium API
+Sistema Exclusivo para Gestão de Carcaças e Produção Industrial
 
-# Descrição
-Sistema Exclusivo GP Premium
+## 📋 Descrição
+API REST desenvolvida em Spring Boot para controle completo de produção, configuração de máquinas, gestão de usuários e monitoramento de processos industriais da GP Premium.
+
+## 🚀 Status do Projeto
+**Versão Atual**: v1.1 (Janeiro 2025)  
+**Status**: ✅ ESTÁVEL - Pronto para Produção  
+**Última Correção**: Hotfix matriz_id nulo
+
+## 📚 Documentação Técnica Completa
+Para informações detalhadas sobre arquitetura, evolução e estado atual do projeto:
+
+### 📊 Documentos Principais
+- **[📊 Resumo de Versão](./docs/VERSION_SUMMARY.md)** - Estado atual e métricas do projeto
+- **[🏗️ Evolução Arquitetural](./docs/ARCHITECTURE_EVOLUTION.md)** - Arquitetura detalhada e roadmap
+- **[🔧 Hotfix Matriz ID](./docs/HOTFIX_MATRIZ_ID.md)** - Correção crítica implementada
+- **[📚 Índice de Documentação](./docs/README.md)** - Navegação completa da documentação
+
+### 📁 Documentos de Desenvolvimento
+- **[📝 Changelog](./CHANGELOG.md)** - Histórico de mudanças
+- **[🛠️ Guia de Desenvolvimento](./DEVELOPMENT.md)** - Setup e desenvolvimento
+- **[📏 Padrões de Código](./CODING_STANDARDS.md)** - Convenções e qualidade
+
+## ⚡ Quick Start
+
+### Pré-requisitos
+```bash
+Java 11+ (recomendado: 11.0.24-tem)
+Maven 3.6+
+MySQL 8.0+ (produção) ou H2 (desenvolvimento)
+```
+
+### Executar a Aplicação
+```bash
+# Instalar dependências
+mvn install
+
+# Executar em modo desenvolvimento
+mvn spring-boot:run
+
+# Acessar documentação da API
+http://localhost:8080/swagger-ui/index.html
+```
+
+### Verificar Porta em Uso
+```bash
+# Verificar processos na porta 8080
+lsof -ti:8080
+
+# Matar processo se necessário
+kill -9 <PID>
+```
+
+## 🎯 Funcionalidades Principais
+
+### ✅ Implementadas e Funcionais
+- **🔐 Autenticação JWT** - Login seguro com tokens
+- **👥 Gestão de Usuários** - CRUD completo com soft delete
+- **⚙️ Configuração de Máquinas** - Associação matriz/máquina [RECÉM CORRIGIDO]
+- **📊 Controle de Produção** - Registro e monitoramento
+- **🏭 Registro de Máquinas** - Cadastro e gestão de equipamentos
+- **📖 Documentação API** - Swagger/OpenAPI 3 completo
+
+### 🛠️ Tecnologias Utilizadas
+```
+Backend: Spring Boot 2.x + Spring Security
+Database: MySQL (Prod) / H2 (Test)
+ORM: JPA/Hibernate
+Documentation: Swagger/OpenAPI 3
+Testing: JUnit 5 + Mockito
+Build: Maven
+Security: JWT + BCrypt
+```
+
+## 🗄️ Configuração do Banco de Dados
+
+### MySQL (Produção)
+```sql
+-- Criar usuário
+CREATE USER 'monty'@'%' IDENTIFIED BY 'some_pass';
+
+-- Criar o banco
+CREATE DATABASE IF NOT EXISTS sislife CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Conceder privilégios
+GRANT ALL PRIVILEGES ON sislife.* TO 'monty'@'%';
+FLUSH PRIVILEGES;
+```
+
+### SDK Java
+```bash
+# Configurar versão do Java
+sdk use java 11.0.24-tem
+sdk default java 11.0.17-tem
+```
+
+---
+
+## 📝 Convenções de Commit
 
 ### Commit type	Emoji
 
@@ -75,8 +171,7 @@ sdk use java 11.0.24-tem
 
 http://localhost:8080/swagger-ui/index.html
 
-
-
 mvn spring-boot:run 
+lsof -ti:8080
 
 

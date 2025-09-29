@@ -4,10 +4,12 @@ import br.compneusgppremium.api.controller.dto.ConfiguracaoMaquinaCreateDTO;
 import br.compneusgppremium.api.controller.dto.ConfiguracaoMaquinaResponseDTO;
 import br.compneusgppremium.api.controller.dto.ConfiguracaoMaquinaUpdateDTO;
 import br.compneusgppremium.api.controller.model.ConfiguracaoMaquinaModel;
+import br.compneusgppremium.api.controller.model.MatrizModel;
 import br.compneusgppremium.api.controller.model.RegistroMaquinaModel;
 import br.compneusgppremium.api.repository.ConfiguracaoMaquinaRepository;
 import br.compneusgppremium.api.repository.RegistroMaquinaRepository;
 import br.compneusgppremium.api.repository.UsuarioRepository;
+import br.compneusgppremium.api.repository.MatrizRepository;
 import br.compneusgppremium.api.util.ApiError;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +49,9 @@ public class ConfiguracaoMaquinaController {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private MatrizRepository matrizRepository;
+
+    @Autowired
     private UsuarioLogadoUtil usuarioLogadoUtil;
 
     /**
@@ -71,12 +76,20 @@ public class ConfiguracaoMaquinaController {
                         .body(new ApiError(HttpStatus.NOT_FOUND, "Máquina não encontrada", null, "Máquina com ID " + dto.getMaquinaId() + " não foi encontrada"));
             }
 
+            // Verificar se a matriz existe
+            Optional<MatrizModel> matrizOpt = matrizRepository.findById(dto.getMatrizId());
+            if (!matrizOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiError(HttpStatus.NOT_FOUND, "Matriz não encontrada", null, "Matriz com ID " + dto.getMatrizId() + " não foi encontrada"));
+            }
+
             // Obter o usuário logado
             Long usuarioId = usuarioLogadoUtil.getUsuarioIdLogado();
 
             // Criar nova configuração
             ConfiguracaoMaquinaModel configuracao = new ConfiguracaoMaquinaModel();
             configuracao.setMaquina(maquinaOpt.get());
+            configuracao.setMatriz(matrizOpt.get());
             configuracao.setCelularId(dto.getCelularId());
             configuracao.setDescricao(dto.getDescricao());
             configuracao.setAtributos(dto.getAtributos());

@@ -31,7 +31,7 @@ public class RegistroMaquinaModel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(description = "Status atual da máquina", example = "Ativa", defaultValue = "Ativa")
-    private StatusMaquina status = StatusMaquina.ATIVA;
+    private StatusMaquina status = StatusMaquina.Ativa;
 
     @Column(length = 250)
     @Schema(description = "Descrição detalhada da máquina", example = "Máquina responsável pela produção de pneus linha A")
@@ -62,7 +62,7 @@ public class RegistroMaquinaModel {
     // Método para soft delete
     public void softDelete() {
         this.dtDelete = LocalDateTime.now();
-        this.status = StatusMaquina.INATIVA;
+        this.status = StatusMaquina.Inativa;
     }
 
     // Método para verificar se está deletado
@@ -72,19 +72,19 @@ public class RegistroMaquinaModel {
 
     // Método para colocar em manutenção
     public void colocarEmManutencao() {
-        this.status = StatusMaquina.MANUTENCAO;
+        this.status = StatusMaquina.Manutencao;
         this.dtUpdate = LocalDateTime.now();
     }
 
     // Método para ativar máquina
     public void ativar() {
-        this.status = StatusMaquina.ATIVA;
+        this.status = StatusMaquina.Ativa;
         this.dtUpdate = LocalDateTime.now();
     }
 
     // Método para inativar máquina
     public void inativar() {
-        this.status = StatusMaquina.INATIVA;
+        this.status = StatusMaquina.Inativa;
         this.dtUpdate = LocalDateTime.now();
     }
 }
