@@ -77,6 +77,6 @@ http://localhost:8080/swagger-ui/index.html
 
 
 
-
+mvn spring-boot:run 
 
 

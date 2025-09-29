@@ -68,11 +68,19 @@ public class ApiError {
 
     private List<ApiSubError> subErrors;
 
+    public ApiError(HttpStatus status, String message, String error) {
+        this.status = status;
+        this.message = message;
+        this.error = error;
+        this.debugMessage = null;
+        timestamp = LocalDateTime.now();
+    }
+
     public ApiError(HttpStatus status, String message, Throwable ex, String error) {
         this.status = status;
         this.message = message;
         this.error = error;
-        this.debugMessage = ex.getLocalizedMessage();
+        this.debugMessage = ex != null ? ex.getLocalizedMessage() : null;
         timestamp = LocalDateTime.now();
     }
 

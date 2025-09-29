@@ -1,5 +1,5 @@
 package br.compneusgppremium.api.repository;
-import br.compneusgppremium.api.domain.ResumoEntidade;
+import br.compneusgppremium.api.util.ResumoEntidade;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 

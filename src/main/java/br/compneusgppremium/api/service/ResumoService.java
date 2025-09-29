@@ -1,6 +1,6 @@
 package br.compneusgppremium.api.service;
 
-import br.compneusgppremium.api.domain.ResumoEntidade;
+import br.compneusgppremium.api.util.ResumoEntidade;
 import br.compneusgppremium.api.repository.ResumoRepository;
 import org.springframework.stereotype.Service;
 
