@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -141,6 +142,68 @@ public class ConfiguracaoMaquinaController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Buscar configuração ativa por celular
+     */
+    @GetMapping("/celular/{celularId}/ativa")
+    @Operation(summary = "Buscar configuração ativa por celular", description = "Retorna a configuração ativa (mais recente) para um celular específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Configuração ativa encontrada",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConfiguracaoMaquinaResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Nenhuma configuração ativa encontrada para este celular",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+    })
+    public ResponseEntity<?> buscarConfiguracaoAtivaPorCelular(
+            @Parameter(description = "ID do celular", example = "CEL001")
+            @PathVariable String celularId) {
+        try {
+            Optional<ConfiguracaoMaquinaModel> configuracaoOpt = configuracaoMaquinaRepository.findActiveByCelularId(celularId);
+            
+            if (!configuracaoOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiError(HttpStatus.NOT_FOUND, "Configuração não encontrada", null, 
+                                "Nenhuma configuração ativa encontrada para o celular: " + celularId));
+            }
+
+            ConfiguracaoMaquinaResponseDTO response = convertToResponseDTO(configuracaoOpt.get());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            String detailedError = extractRootCauseMessage(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", e, 
+                            "Erro ao buscar configuração ativa: " + detailedError));
+        }
+    }
+
+    /**
+     * Listar histórico de configurações por celular
+     */
+    @GetMapping("/celular/{celularId}/historico")
+    @Operation(summary = "Listar histórico de configurações por celular", description = "Retorna todas as configurações de um celular específico ordenadas por data de criação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de configurações retornada com sucesso")
+    })
+    public ResponseEntity<?> listarHistoricoConfiguracoesPorCelular(
+            @Parameter(description = "ID do celular", example = "CEL001")
+            @PathVariable String celularId) {
+        try {
+            List<ConfiguracaoMaquinaModel> configuracoes = configuracaoMaquinaRepository.findByCelularIdAndDtDeleteIsNullOrderByDtCreateDesc(celularId);
+            
+            List<ConfiguracaoMaquinaResponseDTO> response = configuracoes.stream()
+                    .map(this::convertToResponseDTO)
+                    .collect(java.util.stream.Collectors.toList());
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            String detailedError = extractRootCauseMessage(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", e, 
+                            "Erro ao buscar histórico de configurações: " + detailedError));
         }
     }
 

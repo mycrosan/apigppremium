@@ -22,6 +22,7 @@ Para informações detalhadas sobre arquitetura, evolução e estado atual do pr
 - **[📝 Changelog](./CHANGELOG.md)** - Histórico de mudanças
 - **[🛠️ Guia de Desenvolvimento](./DEVELOPMENT.md)** - Setup e desenvolvimento
 - **[📏 Padrões de Código](./CODING_STANDARDS.md)** - Convenções e qualidade
+- **[📱 Múltiplas Configurações](./docs/MULTIPLAS_CONFIGURACOES.md)** - Nova funcionalidade v1.2
 
 ## ⚡ Quick Start
 
@@ -59,6 +60,9 @@ kill -9 <PID>
 - **🔐 Autenticação JWT** - Login seguro com tokens
 - **👥 Gestão de Usuários** - CRUD completo com soft delete
 - **⚙️ Configuração de Máquinas** - Associação matriz/máquina [RECÉM CORRIGIDO]
+  - **📱 NOVO v1.2**: Múltiplas configurações por celular com versioning
+  - **🎯 NOVO v1.2**: Configuração ativa (mais recente) automática
+  - **📋 NOVO v1.2**: Histórico completo de configurações
 - **📊 Controle de Produção** - Registro e monitoramento
 - **🏭 Registro de Máquinas** - Cadastro e gestão de equipamentos
 - **📖 Documentação API** - Swagger/OpenAPI 3 completo

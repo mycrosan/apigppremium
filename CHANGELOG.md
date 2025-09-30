@@ -5,6 +5,64 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.2.0] - 2025-01-25
+
+### ✨ Novas Funcionalidades
+- **FEATURE**: Implementado suporte a múltiplas configurações por celular
+  - Removida constraint única de `celular_id` para permitir múltiplas configurações
+  - Adicionado controle de versioning baseado em timestamp (`dt_create`)
+  - Implementado conceito de "configuração ativa" (mais recente por celular)
+  - Novos endpoints:
+    - `GET /api/configuracao-maquina/celular/{celularId}/ativa` - Busca configuração ativa
+    - `GET /api/configuracao-maquina/celular/{celularId}/historico` - Lista histórico de configurações
+  - Novos métodos no repository:
+    - `findActiveByCelularId()` - Busca configuração mais recente por celular
+    - `findByCelularIdAndDtDeleteIsNullOrderByDtCreateDesc()` - Lista configurações por celular
+
+### 🗄️ Banco de Dados
+- **MIGRATION**: V1.2.0 - Removida constraint única `uq_celular` da tabela `maquina_configuracao`
+- Adicionado índice `idx_celular_dt_create` para otimizar consultas por celular e data
+- Atualizado comentário da tabela para refletir novo comportamento
+
+### 🧪 Testes
+- Adicionados testes unitários para novos endpoints
+- Implementados testes para validação de múltiplas configurações por celular
+- Testes de busca de configuração ativa e histórico
+- Validação de ordenação por data de criação
+
+### 📚 Documentação
+- Atualizada documentação da API com novos endpoints
+- Documentado novo comportamento de configurações múltiplas
+- Adicionados exemplos de uso da nova funcionalidade
+
+## [1.1.0] - 2025-01-25
+
+### 🔧 Correções Críticas
+- **HOTFIX**: Corrigido problema de `matriz_id` null em ConfiguracaoMaquinaModel
+  - Adicionada validação @NotNull para matriz_id
+  - Implementada verificação de existência da matriz antes da criação
+  - Adicionados testes unitários para validação
+  - Corrigido mapeamento JPA para garantir integridade referencial
+
+### 📚 Documentação
+- Criada documentação técnica completa do projeto
+  - `VERSION_SUMMARY.md`: Resumo executivo do backend
+  - `ARCHITECTURE_EVOLUTION.md`: Evolução arquitetural detalhada
+  - `HOTFIX_MATRIZ_ID.md`: Documentação específica da correção crítica
+  - `docs/README.md`: Índice da documentação técnica
+- Atualizado `README.md` principal com referências à nova documentação
+
+### 🧪 Testes
+- Adicionados testes unitários para ConfiguracaoMaquinaController
+- Implementados testes de validação para matriz_id
+- Criados testes manuais para verificação da correção
+
+### 📊 Status do Projeto
+- **Versão**: v1.1 - STABLE
+- **Status**: Pronto para produção
+- **Cobertura de testes**: Funcionalidades principais validadas
+- **Documentação**: Completa e atualizada
+
 ## [Não Lançado]
 
 ### Corrigido

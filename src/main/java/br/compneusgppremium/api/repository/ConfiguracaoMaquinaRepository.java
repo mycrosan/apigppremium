@@ -42,6 +42,18 @@ public interface ConfiguracaoMaquinaRepository extends JpaRepository<Configuraca
     List<ConfiguracaoMaquinaModel> findByMaquinaIdAndDtDeleteIsNull(@Param("maquinaId") Long maquinaId);
 
     /**
+     * Busca a configuração ativa (mais recente) por celularId excluindo registros deletados
+     */
+    @Query("SELECT c FROM maquina_configuracao c WHERE c.celularId = :celularId AND c.dtDelete IS NULL ORDER BY c.dtCreate DESC")
+    Optional<ConfiguracaoMaquinaModel> findActiveByCelularId(@Param("celularId") String celularId);
+
+    /**
+     * Busca todas as configurações por celularId excluindo registros deletados, ordenadas por data de criação
+     */
+    @Query("SELECT c FROM maquina_configuracao c WHERE c.celularId = :celularId AND c.dtDelete IS NULL ORDER BY c.dtCreate DESC")
+    List<ConfiguracaoMaquinaModel> findByCelularIdAndDtDeleteIsNullOrderByDtCreateDesc(@Param("celularId") String celularId);
+
+    /**
      * Busca configurações por ID da matriz excluindo registros deletados
      */
     @Query("SELECT c FROM maquina_configuracao c WHERE c.matriz.id = :matrizId AND c.dtDelete IS NULL")

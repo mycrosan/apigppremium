@@ -2,7 +2,7 @@
 
 ## 🎯 Estado Atual do Projeto
 
-**Versão**: v1.1 (Janeiro 2025)  
+**Versão**: v1.2 (Janeiro 2025)  
 **Status**: ✅ ESTÁVEL  
 **Última Correção**: Hotfix matriz_id nulo  
 
@@ -114,6 +114,11 @@ POST   /api/configuracao-maquina          // Criar ✅ CORRIGIDO
 GET    /api/configuracao-maquina/{id}     // Buscar por ID
 PUT    /api/configuracao-maquina/{id}     // Atualizar
 DELETE /api/configuracao-maquina/{id}     // Soft delete
+
+// NOVOS ENDPOINTS:
+GET    /api/configuracao-maquina/celular/{celularId}        // Múltiplas configurações por celular
+GET    /api/configuracao-maquina/celular/{celularId}/ativa  // Configuração ativa (mais recente)
+GET    /api/configuracao-maquina/celular/{celularId}/historico // Histórico completo
 ```
 
 ### 4. Controle de Produção
