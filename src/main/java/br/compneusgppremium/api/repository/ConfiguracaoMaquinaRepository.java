@@ -119,4 +119,17 @@ public interface ConfiguracaoMaquinaRepository extends JpaRepository<Configuraca
             @Param("matrizId") Long matrizId,
             @Param("celularId") String celularId,
             Pageable pageable);
+
+    /**
+     * Busca a configuração anterior ativa para uma máquina específica (excluindo a configuração atual)
+     * Retorna a configuração mais recente que não seja a que está sendo deletada
+     */
+    @Query("SELECT c FROM maquina_configuracao c WHERE " +
+           "c.maquina.id = :maquinaId AND " +
+           "c.id != :excludeId AND " +
+           "c.dtDelete IS NULL " +
+           "ORDER BY c.dtCreate DESC")
+    Optional<ConfiguracaoMaquinaModel> findPreviousActiveBymaquinaIdExcludingId(
+            @Param("maquinaId") Long maquinaId,
+            @Param("excludeId") Long excludeId);
 }

@@ -34,6 +34,37 @@ GET /api/configuracao-maquina/celular/{celularId}/ativa
 ```
 **Descrição**: Retorna a configuração mais recente (ativa) para um celular específico.
 
+## 🗑️ Soft Delete e Ativação Automática
+
+### Comportamento do Soft Delete
+
+A funcionalidade utiliza soft delete para manter o histórico de configurações:
+
+- Configurações deletadas têm o campo `dt_delete` preenchido
+- Apenas configurações com `dt_delete` nulo são consideradas ativas
+- O histórico preserva todas as configurações, incluindo as deletadas
+- Permite auditoria completa das mudanças de configuração
+
+### Ativação Automática
+
+Quando uma configuração é deletada (soft delete), o sistema automaticamente:
+
+1. **Realiza o soft delete** da configuração atual
+2. **Busca a configuração anterior** mais recente para a mesma máquina
+3. **Mantém a configuração anterior ativa** automaticamente
+4. **Garante que sempre há uma configuração ativa** (se existir histórico)
+
+#### Endpoint de Exclusão Atualizado
+```
+DELETE /api/configuracao-maquina/{id}
+```
+**Descrição**: Remove uma configuração (soft delete) e automaticamente ativa a configuração anterior mais recente para a mesma máquina.
+
+**Comportamento**:
+- Se existe configuração anterior: ela se torna automaticamente ativa
+- Se não existe configuração anterior: máquina fica sem configuração ativa
+- Sempre preserva o histórico completo
+
 **Resposta de Sucesso (200)**:
 ```json
 {
@@ -107,6 +138,8 @@ List<ConfiguracaoMaquinaModel> findByCelularIdAndDtDeleteIsNullOrderByDtCreateDe
 
 ### Testes de Unidade
 
+#### Testes de Múltiplas Configurações
+
 1. **testBuscarConfiguracaoAtivaPorCelular_ComConfiguracaoExistente_DeveRetornarConfiguracaoMaisRecente**
    - Verifica se retorna a configuração mais recente quando existem múltiplas
 
@@ -119,12 +152,31 @@ List<ConfiguracaoMaquinaModel> findByCelularIdAndDtDeleteIsNullOrderByDtCreateDe
 4. **testCriarMultiplasConfiguracoesMesmoCelular_DevePermitirCriacao**
    - Verifica se é possível criar múltiplas configurações para o mesmo celular
 
+#### Testes de Soft Delete e Ativação Automática
+
+5. **testDeletarConfiguracao_ComConfiguracaoExistente_DeveRealizarSoftDelete**
+   - Verifica se o soft delete é realizado corretamente
+
+6. **testDeletarConfiguracao_ComConfiguracaoInexistente_DeveRetornarNotFound**
+   - Verifica se retorna 404 para configurações inexistentes
+
+7. **testDeletarConfiguracao_ComConfiguracaoAnteriorExistente_DeveManterConfiguracaoAnteriorAtiva**
+   - Verifica se a configuração anterior permanece ativa após soft delete
+
+8. **testDeletarConfiguracao_SemConfiguracaoAnterior_DeveApenasRealizarSoftDelete**
+   - Verifica comportamento quando não há configuração anterior
+
 ## 📊 Fluxo de Uso
 
 1. **Primeira Configuração**: Usuário cria configuração inicial para celular
 2. **Nova Configuração**: Usuário cria nova configuração para o mesmo celular
 3. **Busca Ativa**: Sistema sempre retorna a configuração mais recente
 4. **Histórico**: Usuário pode consultar todas as configurações anteriores
+5. **Exclusão com Ativação Automática**: 
+   - Usuário deleta configuração atual
+   - Sistema realiza soft delete
+   - Configuração anterior automaticamente se torna ativa
+   - Histórico completo é preservado
 
 ## 🔍 Considerações Importantes
 

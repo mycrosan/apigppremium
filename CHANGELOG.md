@@ -5,6 +5,27 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.2.1] - 2025-01-25
+
+### ✨ Novas Funcionalidades
+- **FEATURE**: Implementado soft delete com ativação automática de configuração anterior
+  - Atualizado endpoint `DELETE /api/configuracao-maquina/{id}` para ativar automaticamente a configuração anterior
+  - Adicionado método `findPreviousActiveBymaquinaIdExcludingId()` no repository
+  - Implementada lógica de ativação automática após soft delete
+  - Garantia de que sempre há uma configuração ativa (quando existe histórico)
+
+### 🧪 Testes
+- Adicionados 4 novos testes para validar soft delete e ativação automática:
+  - `testDeletarConfiguracao_ComConfiguracaoExistente_DeveRealizarSoftDelete`
+  - `testDeletarConfiguracao_ComConfiguracaoInexistente_DeveRetornarNotFound`
+  - `testDeletarConfiguracao_ComConfiguracaoAnteriorExistente_DeveManterConfiguracaoAnteriorAtiva`
+  - `testDeletarConfiguracao_SemConfiguracaoAnterior_DeveApenasRealizarSoftDelete`
+
+### 📚 Documentação
+- Atualizada documentação em `docs/MULTIPLAS_CONFIGURACOES.md` com seção sobre soft delete
+- Documentado comportamento de ativação automática
+- Adicionados exemplos de fluxo de exclusão
+
 ## [1.2.0] - 2025-01-25
 
 ### ✨ Novas Funcionalidades

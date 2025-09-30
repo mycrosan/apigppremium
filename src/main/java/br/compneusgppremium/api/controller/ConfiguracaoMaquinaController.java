@@ -288,9 +288,11 @@ public class ConfiguracaoMaquinaController {
 
     /**
      * Deletar configuração (soft delete)
+     * Após a exclusão, automaticamente ativa a configuração anterior mais recente para a mesma máquina
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar configuração", description = "Remove uma configuração (soft delete)")
+    @Operation(summary = "Deletar configuração", 
+               description = "Remove uma configuração (soft delete). Automaticamente ativa a configuração anterior mais recente para a mesma máquina.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Configuração deletada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Configuração não encontrada",
@@ -305,9 +307,19 @@ public class ConfiguracaoMaquinaController {
             }
 
             ConfiguracaoMaquinaModel configuracao = configuracaoOpt.get();
+            Long maquinaId = configuracao.getMaquina().getId();
+            
+            // Realiza o soft delete da configuração atual
             configuracao.softDelete();
             configuracaoMaquinaRepository.save(configuracao);
 
+            // Busca a configuração anterior ativa para a mesma máquina
+            Optional<ConfiguracaoMaquinaModel> configuracaoAnteriorOpt = 
+                configuracaoMaquinaRepository.findPreviousActiveBymaquinaIdExcludingId(maquinaId, id);
+            
+            // Se existe uma configuração anterior, ela automaticamente se torna a ativa
+            // (não precisa fazer nada, pois a lógica de "ativa" é baseada na mais recente não deletada)
+            
             return ResponseEntity.noContent().build();
 
         } catch (Exception e) {

@@ -277,4 +277,111 @@ public class ConfiguracaoMaquinaControllerTest {
         // Assert - Segunda configuração também deve ser criada com sucesso
         assertEquals(HttpStatus.CREATED, response2.getStatusCode());
     }
+
+    @Test
+    public void testDeletarConfiguracao_ComConfiguracaoExistente_DeveRealizarSoftDelete() {
+        // Arrange
+        Long configId = 1L;
+        ConfiguracaoMaquinaModel configuracao = new ConfiguracaoMaquinaModel();
+        configuracao.setId(configId);
+        configuracao.setCelularId("CEL001");
+        
+        RegistroMaquinaModel maquina = new RegistroMaquinaModel();
+        maquina.setId(1L);
+        configuracao.setMaquina(maquina);
+
+        when(configuracaoMaquinaRepository.findByIdAndDtDeleteIsNull(configId))
+                .thenReturn(Optional.of(configuracao));
+        when(configuracaoMaquinaRepository.save(any(ConfiguracaoMaquinaModel.class)))
+                .thenReturn(configuracao);
+        when(configuracaoMaquinaRepository.findPreviousActiveBymaquinaIdExcludingId(1L, configId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ResponseEntity<?> response = configuracaoMaquinaController.deletarConfiguracao(configId);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNotNull(configuracao.getDtDelete());
+    }
+
+    @Test
+    public void testDeletarConfiguracao_ComConfiguracaoInexistente_DeveRetornarNotFound() {
+        // Arrange
+        Long configId = 999L;
+        when(configuracaoMaquinaRepository.findByIdAndDtDeleteIsNull(configId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        ResponseEntity<?> response = configuracaoMaquinaController.deletarConfiguracao(configId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void testDeletarConfiguracao_ComConfiguracaoAnteriorExistente_DeveManterConfiguracaoAnteriorAtiva() {
+        // Arrange
+        Long configAtualId = 2L;
+        Long configAnteriorId = 1L;
+        
+        // Configuração atual (a ser deletada)
+        ConfiguracaoMaquinaModel configAtual = new ConfiguracaoMaquinaModel();
+        configAtual.setId(configAtualId);
+        configAtual.setCelularId("CEL001");
+        configAtual.setDtCreate(LocalDateTime.now());
+        
+        RegistroMaquinaModel maquina = new RegistroMaquinaModel();
+        maquina.setId(1L);
+        configAtual.setMaquina(maquina);
+
+        // Configuração anterior (deve permanecer ativa)
+        ConfiguracaoMaquinaModel configAnterior = new ConfiguracaoMaquinaModel();
+        configAnterior.setId(configAnteriorId);
+        configAnterior.setCelularId("CEL001");
+        configAnterior.setMaquina(maquina);
+        configAnterior.setDtCreate(LocalDateTime.now().minusHours(1));
+
+        when(configuracaoMaquinaRepository.findByIdAndDtDeleteIsNull(configAtualId))
+                .thenReturn(Optional.of(configAtual));
+        when(configuracaoMaquinaRepository.save(any(ConfiguracaoMaquinaModel.class)))
+                .thenReturn(configAtual);
+        when(configuracaoMaquinaRepository.findPreviousActiveBymaquinaIdExcludingId(1L, configAtualId))
+                .thenReturn(Optional.of(configAnterior));
+
+        // Act
+        ResponseEntity<?> response = configuracaoMaquinaController.deletarConfiguracao(configAtualId);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNotNull(configAtual.getDtDelete()); // Configuração atual foi deletada
+        assertNull(configAnterior.getDtDelete()); // Configuração anterior permanece ativa
+    }
+
+    @Test
+    public void testDeletarConfiguracao_SemConfiguracaoAnterior_DeveApenasRealizarSoftDelete() {
+        // Arrange
+        Long configId = 1L;
+        ConfiguracaoMaquinaModel configuracao = new ConfiguracaoMaquinaModel();
+        configuracao.setId(configId);
+        configuracao.setCelularId("CEL001");
+        
+        RegistroMaquinaModel maquina = new RegistroMaquinaModel();
+        maquina.setId(1L);
+        configuracao.setMaquina(maquina);
+
+        when(configuracaoMaquinaRepository.findByIdAndDtDeleteIsNull(configId))
+                .thenReturn(Optional.of(configuracao));
+        when(configuracaoMaquinaRepository.save(any(ConfiguracaoMaquinaModel.class)))
+                .thenReturn(configuracao);
+        when(configuracaoMaquinaRepository.findPreviousActiveBymaquinaIdExcludingId(1L, configId))
+                .thenReturn(Optional.empty()); // Não há configuração anterior
+
+        // Act
+        ResponseEntity<?> response = configuracaoMaquinaController.deletarConfiguracao(configId);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNotNull(configuracao.getDtDelete());
+    }
 }

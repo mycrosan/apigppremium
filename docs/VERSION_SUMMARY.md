@@ -2,9 +2,9 @@
 
 ## 🎯 Estado Atual do Projeto
 
-**Versão**: v1.2 (Janeiro 2025)  
+**Versão**: v1.2.1 (Janeiro 2025)  
 **Status**: ✅ ESTÁVEL  
-**Última Correção**: Hotfix matriz_id nulo  
+**Última Funcionalidade**: Soft delete com ativação automática  
 
 ## 📊 Métricas do Projeto
 
