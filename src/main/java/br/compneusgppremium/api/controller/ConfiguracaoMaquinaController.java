@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -160,15 +162,18 @@ public class ConfiguracaoMaquinaController {
             @Parameter(description = "ID do celular", example = "CEL001")
             @PathVariable String celularId) {
         try {
-            Optional<ConfiguracaoMaquinaModel> configuracaoOpt = configuracaoMaquinaRepository.findActiveByCelularId(celularId);
+            Pageable pageable = PageRequest.of(0, 1);
+            List<ConfiguracaoMaquinaModel> configuracoes = configuracaoMaquinaRepository.findActiveByCelularId(celularId, pageable);
             
-            if (!configuracaoOpt.isPresent()) {
+            if (configuracoes.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiError(HttpStatus.NOT_FOUND, "Configuração não encontrada", null, 
                                 "Nenhuma configuração ativa encontrada para o celular: " + celularId));
             }
 
-            ConfiguracaoMaquinaResponseDTO response = convertToResponseDTO(configuracaoOpt.get());
+            // Pega apenas o primeiro resultado (mais atual devido ao ORDER BY c.dtCreate DESC)
+            ConfiguracaoMaquinaModel configuracao = configuracoes.get(0);
+            ConfiguracaoMaquinaResponseDTO response = convertToResponseDTO(configuracao);
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -328,6 +333,8 @@ public class ConfiguracaoMaquinaController {
                     .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", e, "Erro ao deletar configuração: " + detailedError));
         }
     }
+
+
 
     /**
      * Converte um modelo para DTO de resposta

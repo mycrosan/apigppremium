@@ -20,13 +20,20 @@ public interface ConfiguracaoMaquinaRepository extends JpaRepository<Configuraca
     /**
      * Busca configuração por ID excluindo registros deletados
      */
-    @Query("SELECT c FROM maquina_configuracao c WHERE c.id = :id AND c.dtDelete IS NULL")
+    @Query("SELECT c FROM maquina_configuracao c " +
+           "LEFT JOIN FETCH c.matriz " +
+           "LEFT JOIN FETCH c.maquina " +
+           "WHERE c.id = :id AND c.dtDelete IS NULL")
     Optional<ConfiguracaoMaquinaModel> findByIdAndDtDeleteIsNull(@Param("id") Long id);
 
     /**
      * Busca todas as configurações excluindo registros deletados, ordenadas por data de criação
      */
-    @Query("SELECT c FROM maquina_configuracao c WHERE c.dtDelete IS NULL ORDER BY c.dtCreate DESC")
+    @Query(value = "SELECT c FROM maquina_configuracao c " +
+           "LEFT JOIN FETCH c.matriz " +
+           "LEFT JOIN FETCH c.maquina " +
+           "WHERE c.dtDelete IS NULL ORDER BY c.dtCreate DESC",
+           countQuery = "SELECT COUNT(c) FROM maquina_configuracao c WHERE c.dtDelete IS NULL")
     Page<ConfiguracaoMaquinaModel> findByDtDeleteIsNullOrderByDtCreateDesc(Pageable pageable);
 
     /**
@@ -43,9 +50,14 @@ public interface ConfiguracaoMaquinaRepository extends JpaRepository<Configuraca
 
     /**
      * Busca a configuração ativa (mais recente) por celularId excluindo registros deletados
+     * Retorna apenas o registro mais atual caso existam múltiplos resultados
      */
-    @Query("SELECT c FROM maquina_configuracao c WHERE c.celularId = :celularId AND c.dtDelete IS NULL ORDER BY c.dtCreate DESC")
-    Optional<ConfiguracaoMaquinaModel> findActiveByCelularId(@Param("celularId") String celularId);
+    @Query("SELECT c FROM maquina_configuracao c " +
+           "LEFT JOIN FETCH c.matriz " +
+           "LEFT JOIN FETCH c.maquina " +
+           "WHERE c.celularId = :celularId AND c.dtDelete IS NULL " +
+           "ORDER BY c.dtCreate DESC")
+    List<ConfiguracaoMaquinaModel> findActiveByCelularId(@Param("celularId") String celularId, Pageable pageable);
 
     /**
      * Busca todas as configurações por celularId excluindo registros deletados, ordenadas por data de criação
@@ -106,14 +118,22 @@ public interface ConfiguracaoMaquinaRepository extends JpaRepository<Configuraca
             @Param("celularId") String celularId);
 
     /**
-     * Busca configurações com filtros múltiplos
+     * Busca configurações com filtros opcionais excluindo registros deletados
      */
-    @Query("SELECT c FROM maquina_configuracao c WHERE " +
+    @Query(value = "SELECT c FROM maquina_configuracao c " +
+           "LEFT JOIN FETCH c.matriz " +
+           "LEFT JOIN FETCH c.maquina " +
+           "WHERE " +
            "(:maquinaId IS NULL OR c.maquina.id = :maquinaId) AND " +
            "(:matrizId IS NULL OR c.matriz.id = :matrizId) AND " +
            "(:celularId IS NULL OR c.celularId = :celularId) AND " +
            "c.dtDelete IS NULL " +
-           "ORDER BY c.dtCreate DESC")
+           "ORDER BY c.dtCreate DESC",
+           countQuery = "SELECT COUNT(c) FROM maquina_configuracao c WHERE " +
+           "(:maquinaId IS NULL OR c.maquina.id = :maquinaId) AND " +
+           "(:matrizId IS NULL OR c.matriz.id = :matrizId) AND " +
+           "(:celularId IS NULL OR c.celularId = :celularId) AND " +
+           "c.dtDelete IS NULL")
     Page<ConfiguracaoMaquinaModel> findByFiltersAndDtDeleteIsNull(
             @Param("maquinaId") Long maquinaId,
             @Param("matrizId") Long matrizId,

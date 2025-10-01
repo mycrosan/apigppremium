@@ -9,6 +9,7 @@ import br.compneusgppremium.api.repository.MatrizRepository;
 import br.compneusgppremium.api.repository.RegistroMaquinaRepository;
 import br.compneusgppremium.api.util.UsuarioLogadoUtil;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -140,8 +141,8 @@ public class ConfiguracaoMaquinaControllerTest {
         matriz.setDescricao("Matriz Teste");
         configuracaoAtiva.setMatriz(matriz);
         
-        when(configuracaoMaquinaRepository.findActiveByCelularId(celularId))
-                .thenReturn(Optional.of(configuracaoAtiva));
+        when(configuracaoMaquinaRepository.findActiveByCelularId(anyString(), any()))
+                .thenReturn(Arrays.asList(configuracaoAtiva));
 
         // Act
         ResponseEntity<?> response = configuracaoMaquinaController.buscarConfiguracaoAtivaPorCelular(celularId);
@@ -155,8 +156,8 @@ public class ConfiguracaoMaquinaControllerTest {
     public void testBuscarConfiguracaoAtivaPorCelular_SemConfiguracao_DeveRetornarNotFound() {
         // Arrange
         String celularId = "CEL999";
-        when(configuracaoMaquinaRepository.findActiveByCelularId(celularId))
-                .thenReturn(Optional.empty());
+        when(configuracaoMaquinaRepository.findActiveByCelularId(anyString(), any()))
+                .thenReturn(Arrays.asList());
 
         // Act
         ResponseEntity<?> response = configuracaoMaquinaController.buscarConfiguracaoAtivaPorCelular(celularId);
@@ -384,4 +385,55 @@ public class ConfiguracaoMaquinaControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNotNull(configuracao.getDtDelete());
     }
+
+    @Test
+    @DisplayName("DEBUG - Verificar se configuração ID 12 existe no banco")
+    void testVerificarConfiguracaoId12() {
+        // Buscar todas as configurações incluindo deletadas
+        List<ConfiguracaoMaquinaModel> todasConfiguracoes = configuracaoMaquinaRepository.findAll();
+        
+        System.out.println("=== DEBUG: TODAS AS CONFIGURAÇÕES ===");
+        for (ConfiguracaoMaquinaModel config : todasConfiguracoes) {
+            System.out.println(String.format("ID: %d, CelularId: %s, Descrição: %s, DtCreate: %s, DtDelete: %s, IsDeleted: %s",
+                config.getId(),
+                config.getCelularId(),
+                config.getDescricao(),
+                config.getDtCreate(),
+                config.getDtDelete(),
+                config.isDeleted()
+            ));
+        }
+        
+        // Verificar especificamente a configuração ID 12
+        Optional<ConfiguracaoMaquinaModel> config12 = configuracaoMaquinaRepository.findById(12L);
+        if (config12.isPresent()) {
+            ConfiguracaoMaquinaModel config = config12.get();
+            System.out.println("=== CONFIGURAÇÃO ID 12 ENCONTRADA ===");
+            System.out.println(String.format("ID: %d, CelularId: %s, Descrição: %s, DtCreate: %s, DtDelete: %s, IsDeleted: %s",
+                config.getId(),
+                config.getCelularId(),
+                config.getDescricao(),
+                config.getDtCreate(),
+                config.getDtDelete(),
+                config.isDeleted()
+            ));
+        } else {
+            System.out.println("=== CONFIGURAÇÃO ID 12 NÃO ENCONTRADA ===");
+        }
+        
+        // Buscar apenas configurações ativas usando paginação
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 100);
+        org.springframework.data.domain.Page<ConfiguracaoMaquinaModel> configuracoesAtivasPage = 
+            configuracaoMaquinaRepository.findByDtDeleteIsNullOrderByDtCreateDesc(pageable);
+        System.out.println("=== CONFIGURAÇÕES ATIVAS (sem dtDelete) ===");
+        for (ConfiguracaoMaquinaModel config : configuracoesAtivasPage.getContent()) {
+            System.out.println(String.format("ID: %d, CelularId: %s, Descrição: %s, DtCreate: %s",
+                config.getId(),
+                config.getCelularId(),
+                config.getDescricao(),
+                config.getDtCreate()
+            ));
+        }
+    }
+
 }
