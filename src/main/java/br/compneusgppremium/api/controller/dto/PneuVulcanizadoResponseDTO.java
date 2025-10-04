@@ -23,6 +23,9 @@ public class PneuVulcanizadoResponseDTO {
     @Schema(description = "ID da produção relacionada", example = "1")
     private Integer producaoId;
 
+    @Schema(description = "Número da etiqueta da carcaça", example = "CAR001")
+    private String numeroEtiqueta;
+
     @Schema(description = "Status da vulcanização", example = "INICIADO")
     private StatusVulcanizacao status;
 
@@ -36,12 +39,13 @@ public class PneuVulcanizadoResponseDTO {
     public PneuVulcanizadoResponseDTO() {}
 
     public PneuVulcanizadoResponseDTO(Long id, Long usuarioId, String usuarioNome, 
-                                     Integer producaoId, StatusVulcanizacao status, 
+                                     Integer producaoId, String numeroEtiqueta, StatusVulcanizacao status, 
                                      LocalDateTime dtCreate, LocalDateTime dtUpdate) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.usuarioNome = usuarioNome;
         this.producaoId = producaoId;
+        this.numeroEtiqueta = numeroEtiqueta;
         this.status = status;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
@@ -78,6 +82,14 @@ public class PneuVulcanizadoResponseDTO {
 
     public void setProducaoId(Integer producaoId) {
         this.producaoId = producaoId;
+    }
+
+    public String getNumeroEtiqueta() {
+        return numeroEtiqueta;
+    }
+
+    public void setNumeroEtiqueta(String numeroEtiqueta) {
+        this.numeroEtiqueta = numeroEtiqueta;
     }
 
     public StatusVulcanizacao getStatus() {

@@ -223,11 +223,19 @@ public class PneuVulcanizadoService {
      * Converte PneuVulcanizadoModel para PneuVulcanizadoResponseDTO
      */
     private PneuVulcanizadoResponseDTO converterParaResponseDTO(PneuVulcanizadoModel model) {
+        String etiqueta = null;
+        try {
+            if (model.getProducao() != null && model.getProducao().getCarcaca() != null) {
+                etiqueta = model.getProducao().getCarcaca().getNumero_etiqueta();
+            }
+        } catch (Exception ignored) {}
+
         return new PneuVulcanizadoResponseDTO(
                 model.getId(),
                 model.getUsuario().getId(),
                 model.getUsuario().getNome(),
                 model.getProducao().getId(),
+                etiqueta,
                 model.getStatus(),
                 model.getDtCreate(),
                 model.getDtUpdate()

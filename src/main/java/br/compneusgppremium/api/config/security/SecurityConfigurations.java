@@ -52,6 +52,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/image/**").permitAll()
                 .antMatchers("/api/download/**").permitAll()
                 .antMatchers("/api/resumo/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/rele/**").permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
