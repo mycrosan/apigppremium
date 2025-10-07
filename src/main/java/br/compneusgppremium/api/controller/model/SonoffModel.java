@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "sonoff")
-@Table(name = "sonoff")
+@Entity(name = "rele")
+@Table(name = "rele")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +32,7 @@ public class SonoffModel {
     private String celularId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "maquina_id", nullable = false)
+    @JoinColumn(name = "maquina_registro_id", nullable = false)
     @Schema(description = "Máquina associada (FK)")
     private RegistroMaquinaModel maquina;
 
