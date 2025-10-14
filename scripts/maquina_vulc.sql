@@ -9,14 +9,14 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-CREATE TABLE IF NOT EXISTS `gp2`.`credenciados` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`credenciados` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `descricao` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
-CREATE TABLE IF NOT EXISTS `gp2`.`maquina_configuracao` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`maquina_configuracao` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `celular_id` VARCHAR(100) NOT NULL,
   `descricao` VARCHAR(150) NULL DEFAULT NULL,
@@ -34,20 +34,20 @@ CREATE TABLE IF NOT EXISTS `gp2`.`maquina_configuracao` (
   INDEX `idx_celular_dt_create` (`celular_id` ASC, `dt_create` DESC) VISIBLE,
   CONSTRAINT `fk_maquina_config_matriz`
     FOREIGN KEY (`matriz_id`)
-    REFERENCES `gp2`.`matriz` (`id`),
+    REFERENCES `gppremium`.`matriz` (`id`),
   CONSTRAINT `fk_maquina_configuracao_maquina1`
     FOREIGN KEY (`maquina_id`)
-    REFERENCES `gp2`.`maquina_registro` (`id`),
+    REFERENCES `gppremium`.`maquina_registro` (`id`),
   CONSTRAINT `fk_maquina_configuracao_usuario1`
     FOREIGN KEY (`usuario_id`)
-    REFERENCES `gp2`.`usuario` (`id`))
+    REFERENCES `gppremium`.`usuario` (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 32
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = 'Configurações de máquina por celular - permite múltiplas configurações, sendo a mais recente a ativa';
 
-CREATE TABLE IF NOT EXISTS `gp2`.`maquina_registro` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`maquina_registro` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
   `numero_serie` VARCHAR(100) NULL DEFAULT NULL,
@@ -63,13 +63,13 @@ CREATE TABLE IF NOT EXISTS `gp2`.`maquina_registro` (
   INDEX `idx_usuario_id` (`usuario_id` ASC) VISIBLE,
   CONSTRAINT `fk_maquina_registro_usuario`
     FOREIGN KEY (`usuario_id`)
-    REFERENCES `gp2`.`usuario` (`id`))
+    REFERENCES `gppremium`.`usuario` (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 7
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS `gp2`.`pneus_vulcanizados` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`pneus_vulcanizados` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `dt_create` DATETIME NOT NULL,
   `dt_delete` DATETIME NULL DEFAULT NULL,
@@ -87,17 +87,17 @@ CREATE TABLE IF NOT EXISTS `gp2`.`pneus_vulcanizados` (
   INDEX `idx_dt_delete` (`dt_delete` ASC) VISIBLE,
   CONSTRAINT `fk_pneus_vulcanizados_producao1`
     FOREIGN KEY (`producao_id`)
-    REFERENCES `gp2`.`producao` (`id`),
+    REFERENCES `gppremium`.`producao` (`id`),
   CONSTRAINT `fk_pneus_vulcanizados_usuario1`
     FOREIGN KEY (`usuario_id`)
-    REFERENCES `gp2`.`usuario` (`id`))
+    REFERENCES `gppremium`.`usuario` (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 20
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci
 COMMENT = 'Tabela para controle de pneus vulcanizados por usuário e produção';
 
-CREATE TABLE IF NOT EXISTS `gp2`.`rele` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`rele` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `dt_create` DATETIME NOT NULL,
   `dt_delete` DATETIME NULL DEFAULT NULL,
@@ -110,13 +110,13 @@ CREATE TABLE IF NOT EXISTS `gp2`.`rele` (
   INDEX `fk_rele_maquina_registro1_idx` (`maquina_registro_id` ASC) VISIBLE,
   CONSTRAINT `fk_rele_maquina_registro`
     FOREIGN KEY (`maquina_registro_id`)
-    REFERENCES `gp2`.`maquina_registro` (`id`))
+    REFERENCES `gppremium`.`maquina_registro` (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 7
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS `gp2`.`tipo_valida_regra` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`tipo_valida_regra` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `descricao` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
@@ -124,7 +124,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS `gp2`.`valida_regra` (
+CREATE TABLE IF NOT EXISTS `gppremium`.`valida_regra` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `dados` VARCHAR(255) NULL DEFAULT NULL,
   `status` BIT(1) NULL DEFAULT NULL,
@@ -137,13 +137,13 @@ CREATE TABLE IF NOT EXISTS `gp2`.`valida_regra` (
   INDEX `FKlrl8o4x3hksl47utc8ftdcah6` (`tipo_valida_regra_id` ASC) VISIBLE,
   CONSTRAINT `FK4hflho3eiq4tpsfudl6fku0fy`
     FOREIGN KEY (`qualidade_id`)
-    REFERENCES `gp2`.`controle_qualidade` (`id`),
+    REFERENCES `gppremium`.`controle_qualidade` (`id`),
   CONSTRAINT `FKgvqilhcd5705umlsk29bu2rl6`
     FOREIGN KEY (`regra_id`)
-    REFERENCES `gp2`.`regra` (`id`),
+    REFERENCES `gppremium`.`regra` (`id`),
   CONSTRAINT `FKlrl8o4x3hksl47utc8ftdcah6`
     FOREIGN KEY (`tipo_valida_regra_id`)
-    REFERENCES `gp2`.`tipo_valida_regra` (`id`))
+    REFERENCES `gppremium`.`tipo_valida_regra` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
