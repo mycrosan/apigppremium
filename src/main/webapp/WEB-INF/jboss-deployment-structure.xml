@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <exclude-subsystems>
+            <subsystem name="webservices" />
+        </exclude-subsystems>
+        <exclusions>
+            <module name="javax.websocket.api" />
+            <module name="org.apache.tomcat.embed" />
+        </exclusions>
+        <dependencies>
+            <module name="io.undertow.websocket" services="import" />
+            <module name="io.undertow.websocket.jsr" services="import" />
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>
