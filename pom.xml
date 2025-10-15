@@ -67,8 +67,20 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.apache.tomcat.embed</groupId>
                     <artifactId>tomcat-embed-websocket</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                    <artifactId>tomcat-embed-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.websocket</groupId>
+                    <artifactId>websocket</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -77,8 +89,24 @@
             <artifactId>spring-boot-starter-data-rest</artifactId>
             <exclusions>
                 <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.apache.tomcat.embed</groupId>
                     <artifactId>tomcat-embed-websocket</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- Adiciona dependência do Undertow -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.undertow</groupId>
+                    <artifactId>undertow-websockets-jsr</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
