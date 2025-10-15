@@ -7,10 +7,11 @@
         <exclusions>
             <module name="javax.websocket.api" />
             <module name="org.apache.tomcat.embed" />
+            <module name="org.apache.tomcat.embed.websocket" />
         </exclusions>
         <dependencies>
-            <module name="io.undertow.websocket" services="import" />
-            <module name="io.undertow.websocket.jsr" services="import" />
+            <module name="javax.websocket.api" export="true" />
+            <module name="org.wildfly.extension.undertow" export="true" />
         </dependencies>
     </deployment>
 </jboss-deployment-structure>
