@@ -112,12 +112,6 @@
             <version>1.6.6</version>
         </dependency>
 
-        <!-- Flyway for database migrations -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>

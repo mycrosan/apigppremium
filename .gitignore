@@ -38,3 +38,4 @@ build/
 release/
 release/**
 *.tar.gz
+.DS_Store
